@@ -1,0 +1,26 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Navbar from "../components/landing/Navbar.astro";
+import type { Locale } from "../i18n/utils";
+
+interface Props {
+	title: string;
+	description: string;
+	locale: Locale;
+}
+
+const { title, description, locale } = Astro.props;
+---
+
+<!doctype html>
+<html lang={locale} class="scroll-smooth">
+	<head>
+		<BaseHead title={title} description={description} locale={locale} />
+	</head>
+	<body class="min-h-screen bg-white text-gray-900 antialiased">
+		<Navbar locale={locale} />
+		<main>
+			<slot />
+		</main>
+	</body>
+</html>

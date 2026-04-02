@@ -1,5 +1,5 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
-
-export const SITE_TITLE = "Astro Blog";
-export const SITE_DESCRIPTION = "Welcome to my website!";
+export const SITE_TITLE = "Luna";
+export const SITE_DESCRIPTION =
+	"Moderni sustav za upravljanje rasporedom, odmorima i bolovanjima medicinskog osoblja.";
+export const SITE_URL = "https://luna.med";
+export const APP_URL = "https://app.luna.med";

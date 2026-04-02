@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@font-face {
+	font-family: "Atkinson";
+	src: url("/fonts/atkinson-regular.woff") format("woff");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Atkinson";
+	src: url("/fonts/atkinson-bold.woff") format("woff");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@theme {
+	--font-sans: "Atkinson", ui-sans-serif, system-ui, sans-serif;
+
+	--color-luna-50: #f5f3ff;
+	--color-luna-100: #ede9fe;
+	--color-luna-200: #ddd6fe;
+	--color-luna-300: #c4b5fd;
+	--color-luna-400: #a78bfa;
+	--color-luna-500: #8b5cf6;
+	--color-luna-600: #7c3aed;
+	--color-luna-700: #6d28d9;
+	--color-luna-800: #5b21b6;
+	--color-luna-900: #4c1d95;
+	--color-luna-950: #2e1065;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,112 @@
+---
+import Container from "../ui/Container.astro";
+import Button from "../ui/Button.astro";
+import { useTranslations, type Locale } from "../../i18n/utils";
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-32">
+	<!-- Background gradient -->
+	<div class="absolute inset-0 -z-10">
+		<div
+			class="absolute inset-0 bg-gradient-to-br from-luna-50 via-white to-luna-100/50"
+		>
+		</div>
+		<div
+			class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] rounded-full bg-luna-200/30 blur-3xl"
+		>
+		</div>
+		<div
+			class="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[400px] h-[400px] rounded-full bg-luna-300/20 blur-3xl"
+		>
+		</div>
+	</div>
+
+	<Container>
+		<div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+			<div class="text-center lg:text-left">
+				<h1
+					class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl"
+				>
+					{t.hero.headline}
+				</h1>
+				<p class="mt-6 text-lg text-gray-600 sm:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0">
+					{t.hero.subheadline}
+				</p>
+				<div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+					<Button variant="primary" size="lg" href="#contact">
+						{t.hero.ctaPrimary}
+					</Button>
+					<Button variant="secondary" size="lg" href="#features">
+						{t.hero.ctaSecondary}
+					</Button>
+				</div>
+			</div>
+
+			<!-- Abstract dashboard illustration -->
+			<div class="mt-12 lg:mt-0 flex justify-center">
+				<div
+					class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl shadow-luna-500/10 border border-gray-200 p-6"
+				>
+					<!-- Mock dashboard header -->
+					<div class="flex items-center gap-2 mb-4">
+						<div class="w-3 h-3 rounded-full bg-red-400"></div>
+						<div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+						<div class="w-3 h-3 rounded-full bg-green-400"></div>
+						<div class="ml-4 h-4 w-32 rounded bg-gray-100"></div>
+					</div>
+
+					<!-- Mock calendar grid -->
+					<div class="grid grid-cols-7 gap-1.5 mb-4">
+						{
+							Array.from({ length: 7 }).map(() => (
+								<div class="h-3 rounded bg-gray-200 text-[6px] text-center text-gray-400" />
+							))
+						}
+						{
+							Array.from({ length: 35 }).map((_, i) => {
+								const colors = [
+									"bg-gray-50",
+									"bg-luna-100",
+									"bg-luna-200",
+									"bg-green-100",
+									"bg-amber-100",
+								];
+								const color = i === 8 || i === 9 || i === 10
+									? "bg-luna-300"
+									: i === 15 || i === 16
+										? "bg-green-200"
+										: i === 22
+											? "bg-amber-200"
+											: colors[Math.floor(Math.random() * 2)];
+								return <div class:list={["h-6 rounded", color]} />;
+							})
+						}
+					</div>
+
+					<!-- Mock stats row -->
+					<div class="grid grid-cols-3 gap-3">
+						<div class="rounded-lg bg-luna-50 p-3">
+							<div class="h-2 w-8 rounded bg-luna-300 mb-2"></div>
+							<div class="text-lg font-bold text-luna-700">18</div>
+						</div>
+						<div class="rounded-lg bg-green-50 p-3">
+							<div class="h-2 w-10 rounded bg-green-300 mb-2"></div>
+							<div class="text-lg font-bold text-green-700">5</div>
+						</div>
+						<div class="rounded-lg bg-amber-50 p-3">
+							<div class="h-2 w-6 rounded bg-amber-300 mb-2"></div>
+							<div class="text-lg font-bold text-amber-700">2</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Container>
+</section>

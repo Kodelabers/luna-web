@@ -1,0 +1,39 @@
+---
+import Container from "../ui/Container.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+import FeatureCard from "./FeatureCard.astro";
+import { useTranslations, type Locale } from "../../i18n/utils";
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const features = [
+	{ icon: "calendar" as const, ...t.features.absence },
+	{ icon: "chart" as const, ...t.features.planning },
+	{ icon: "shield" as const, ...t.features.balance },
+	{ icon: "users" as const, ...t.features.admin },
+	{ icon: "export" as const, ...t.features.reports },
+];
+---
+
+<section id="features" class="py-16 sm:py-24">
+	<Container>
+		<SectionHeading title={t.features.title} subtitle={t.features.subtitle} />
+
+		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+			{
+				features.map((feature) => (
+					<FeatureCard
+						icon={feature.icon}
+						title={feature.title}
+						description={feature.description}
+					/>
+				))
+			}
+		</div>
+	</Container>
+</section>

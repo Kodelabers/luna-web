@@ -1,0 +1,23 @@
+---
+import FeatureIcons from "../icons/FeatureIcons.astro";
+
+interface Props {
+	icon: "calendar" | "shield" | "chart" | "users" | "brain" | "export";
+	title: string;
+	description: string;
+}
+
+const { icon, title, description } = Astro.props;
+---
+
+<div
+	class="group relative rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300 hover:shadow-lg hover:shadow-luna-500/5 hover:border-luna-200"
+>
+	<div
+		class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-luna-50 text-luna-600 group-hover:bg-luna-100 transition-colors"
+	>
+		<FeatureIcons name={icon} size={24} />
+	</div>
+	<h3 class="text-lg font-semibold text-gray-900">{title}</h3>
+	<p class="mt-2 text-gray-600 leading-relaxed">{description}</p>
+</div>
