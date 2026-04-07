@@ -65,6 +65,18 @@ export interface TranslationKeys {
 			description: string;
 		}[];
 	};
+	team: {
+		title: string;
+		subtitle: string;
+		ceoLabel: string;
+		ceoName: string;
+		ceoDescription: string;
+		membersLabel: string;
+		membersTitlePrefix: string;
+		membersLinkLabel: string;
+		membersTitleSuffix: string;
+		membersDescription: string;
+	};
 	cta: {
 		title: string;
 		subtitle: string;
@@ -176,6 +188,20 @@ export const translations: Record<Locale, TranslationKeys> = {
 						"Nakon odobravanja, saldo raspoloživih dana automatski se ažurira. Kalendar i planiranje reflektiraju promjene u realnom vremenu.",
 				},
 			],
+		},
+		team: {
+			title: "Tim koji stoji iza Lune",
+			subtitle: "Luna razvijaju ljudi s iskustvom u tehnologiji i zdravstvenim procesima.",
+			ceoLabel: "CEO Lune",
+			ceoName: "Krešimir Dželalija",
+			ceoDescription:
+				"Krešimir Dželalija vodi viziju i razvoj Lune s fokusom na pouzdana digitalna rješenja za zdravstvene ustanove.",
+			membersLabel: "Ostatak tima",
+			membersTitlePrefix: "Tim čine članovi",
+			membersLinkLabel: "Kodelaba",
+			membersTitleSuffix: "",
+			membersDescription:
+				"Ostatak Luna tima čine članovi Kodelaba koji zajedno grade proizvod i pružaju podršku korisnicima.",
 		},
 		cta: {
 			title: "Spremni za modernizaciju upravljanja rasporedom?",
@@ -300,6 +326,21 @@ export const translations: Record<Locale, TranslationKeys> = {
 				},
 			],
 		},
+		team: {
+			title: "The team behind Luna",
+			subtitle:
+				"Luna is built by people with hands-on experience in technology and healthcare workflows.",
+			ceoLabel: "Luna CEO",
+			ceoName: "Krešimir Dželalija",
+			ceoDescription:
+				"Krešimir Dželalija leads Luna's vision and product development with a focus on reliable digital solutions for healthcare facilities.",
+			membersLabel: "Rest of the team",
+			membersTitlePrefix: "The team is comprised of",
+			membersLinkLabel: "Kodelab",
+			membersTitleSuffix: "members",
+			membersDescription:
+				"The broader Luna team is comprised of Kodelab members who collaborate across product, engineering, and customer support.",
+		},
 		cta: {
 			title: "Ready to modernize your scheduling?",
 			subtitle:
@@ -422,6 +463,21 @@ export const translations: Record<Locale, TranslationKeys> = {
 						"Po odobritvi se stanje razpoložljivih dni samodejno posodobi. Koledar in načrtovanje odražata spremembe v realnem času.",
 				},
 			],
+		},
+		team: {
+			title: "Ekipa za Luno",
+			subtitle:
+				"Luno razvija ekipa z izkušnjami na področju tehnologije in zdravstvenih procesov.",
+			ceoLabel: "CEO Lune",
+			ceoName: "Krešimir Dželalija",
+			ceoDescription:
+				"Krešimir Dželalija vodi vizijo in razvoj Lune s poudarkom na zanesljivih digitalnih rešitvah za zdravstvene ustanove.",
+			membersLabel: "Preostanek ekipe",
+			membersTitlePrefix: "Ekipo sestavljajo člani",
+			membersLinkLabel: "Kodelaba",
+			membersTitleSuffix: "",
+			membersDescription:
+				"Širšo ekipo Lune sestavljajo člani Kodelaba, ki skupaj gradijo produkt in podpirajo uporabnike.",
 		},
 		cta: {
 			title: "Pripravljeni na posodobitev upravljanja razporedov?",

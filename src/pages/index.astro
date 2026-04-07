@@ -5,6 +5,7 @@ import TrustBar from "../components/landing/TrustBar.astro";
 import Features from "../components/landing/Features.astro";
 import AIScheduling from "../components/landing/AIScheduling.astro";
 import HowItWorks from "../components/landing/HowItWorks.astro";
+import TeamInfo from "../components/landing/TeamInfo.astro";
 import CTA from "../components/landing/CTA.astro";
 import LandingFooter from "../components/landing/LandingFooter.astro";
 import { useTranslations } from "../i18n/utils";
@@ -19,6 +20,7 @@ const t = useTranslations(locale);
 	<Features locale={locale} />
 	<AIScheduling locale={locale} />
 	<HowItWorks locale={locale} />
+	<TeamInfo locale={locale} />
 	<CTA locale={locale} />
 	<LandingFooter locale={locale} />
 </LandingPage>
