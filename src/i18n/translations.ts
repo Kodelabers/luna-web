@@ -199,6 +199,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			],
 			legal: "Pravno",
 			legalLinks: [
+				{ label: "Uvjeti korištenja", href: "/terms" },
 				{ label: "Pravila privatnosti", href: "https://kodelab.hr/privacy-policy/", external: true },
 			],
 			copyright: "Kodelab d.o.o. Sva prava pridržana.",
@@ -321,6 +322,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			],
 			legal: "Legal",
 			legalLinks: [
+				{ label: "Terms", href: "/terms" },
 				{ label: "Privacy Policy", href: "https://kodelab.hr/privacy-policy/", external: true },
 			],
 			copyright: "Kodelab d.o.o. All rights reserved.",
@@ -443,6 +445,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			],
 			legal: "Pravno",
 			legalLinks: [
+				{ label: "Pogoji uporabe", href: "/terms" },
 				{ label: "Politika zasebnosti", href: "https://kodelab.hr/privacy-policy/", external: true },
 			],
 			copyright: "Kodelab d.o.o. Vse pravice pridržane.",
