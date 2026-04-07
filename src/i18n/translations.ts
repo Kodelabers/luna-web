@@ -193,7 +193,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			title: "Tim koji stoji iza Lune",
 			subtitle: "Luna razvijaju ljudi s iskustvom u tehnologiji i zdravstvenim procesima.",
 			ceoLabel: "CEO Lune",
-			ceoName: "Krešimir Dželalija",
+			ceoName: "dr. sc. Krešimir Dželalija",
 			ceoDescription:
 				"Krešimir Dželalija vodi viziju i razvoj Lune s fokusom na pouzdana digitalna rješenja za zdravstvene ustanove.",
 			membersLabel: "Ostatak tima",
@@ -331,7 +331,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			subtitle:
 				"Luna is built by people with hands-on experience in technology and healthcare workflows.",
 			ceoLabel: "Luna CEO",
-			ceoName: "Krešimir Dželalija",
+			ceoName: "Krešimir Dželalija, PhD",
 			ceoDescription:
 				"Krešimir Dželalija leads Luna's vision and product development with a focus on reliable digital solutions for healthcare facilities.",
 			membersLabel: "Rest of the team",
@@ -469,7 +469,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			subtitle:
 				"Luno razvija ekipa z izkušnjami na področju tehnologije in zdravstvenih procesov.",
 			ceoLabel: "CEO Lune",
-			ceoName: "Krešimir Dželalija",
+			ceoName: "dr. sc. Krešimir Dželalija",
 			ceoDescription:
 				"Krešimir Dželalija vodi vizijo in razvoj Lune s poudarkom na zanesljivih digitalnih rešitvah za zdravstvene ustanove.",
 			membersLabel: "Preostanek ekipe",
