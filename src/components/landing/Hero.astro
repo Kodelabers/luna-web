@@ -1,6 +1,4 @@
 ---
-import Container from "../ui/Container.astro";
-import Button from "../ui/Button.astro";
 import { useTranslations, type Locale } from "../../i18n/utils";
 
 interface Props {
@@ -9,104 +7,270 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+const r = t.hero.rota;
+
+const legend = [
+	{ color: "#F0B429", label: r.legendLong },
+	{ color: "#E85A46", label: r.legendShort },
+	{ color: "#4AA878", label: r.legendLeave },
+	{ color: "#D6608C", label: r.legendUnavailable },
+];
 ---
 
-<section class="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-32">
-	<!-- Background gradient -->
-	<div class="absolute inset-0 -z-10">
-		<div
-			class="absolute inset-0 bg-gradient-to-br from-luna-50 via-white to-luna-100/50"
-		>
+<header class="hero">
+	<div class="wrap">
+		<span class="kicker">{t.hero.kicker}</span>
+		<h1 class="d1">
+			{t.hero.headlineLead}{" "}<span class="em">{t.hero.headlineAccent}</span>.
+		</h1>
+		<p class="hero-sub">{t.hero.subheadline}</p>
+		<div class="hero-cta">
+			<a href="#kontakt" class="btn btn-sig">{t.hero.ctaPrimary}</a>
+			<a href="#kako" class="btn btn-line">{t.hero.ctaSecondary}</a>
 		</div>
+
 		<div
-			class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] rounded-full bg-luna-200/30 blur-3xl"
+			class="rota-panel"
+			id="rota-panel"
+			data-initial-label={r.initialLabel}
+			data-solution-label={r.solutionLabel}
+			data-fair-first={r.fairFirst}
+			data-fair-equal={r.fairEqual}
+			data-hours-unit={r.hoursUnit}
 		>
-		</div>
-		<div
-			class="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[400px] h-[400px] rounded-full bg-luna-300/20 blur-3xl"
-		>
+			<div class="rota-bar">
+				<span>{r.caption}</span>
+				<span class="dots" id="rota-dots"></span>
+				<span id="rota-label">{r.initialLabel}</span>
+			</div>
+			<div class="rota-stage">
+				<div class="rota-scroll">
+					<div class="rota-grid" id="rota-grid" role="img" aria-label={r.gridAria}></div>
+				</div>
+				<div class="rota-side">
+					<h4>{r.loadTitle}</h4>
+					<div id="rota-bars"></div>
+					<div class="lspread">
+						<span>{r.spreadLabel}</span><b id="rota-spread">—</b>
+					</div>
+				</div>
+			</div>
+			<div class="rota-legend">
+				{
+					legend.map((item) => (
+						<span>
+							<i style={`background:${item.color}`} />
+							{item.label}
+						</span>
+					))
+				}
+			</div>
 		</div>
 	</div>
+</header>
 
-	<Container>
-		<div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-			<div class="text-center lg:text-left">
-				<h1
-					class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl"
-				>
-					{t.hero.headline}
-				</h1>
-				<p class="mt-6 text-lg text-gray-600 sm:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0">
-					{t.hero.subheadline}
-				</p>
-				<div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-					<Button variant="primary" size="lg" href="#contact">
-						{t.hero.ctaPrimary}
-					</Button>
-					<Button variant="secondary" size="lg" href="#features">
-						{t.hero.ctaSecondary}
-					</Button>
-				</div>
-			</div>
+<script>
+	import { ROTA, nameOf, MAX_HOURS, type RotaSolution } from "../../data/rota";
 
-			<!-- Abstract dashboard illustration -->
-			<div class="mt-12 lg:mt-0 flex justify-center">
-				<div
-					class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl shadow-luna-500/10 border border-gray-200 p-6"
-				>
-					<!-- Mock dashboard header -->
-					<div class="flex items-center gap-2 mb-4">
-						<div class="w-3 h-3 rounded-full bg-red-400"></div>
-						<div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-						<div class="w-3 h-3 rounded-full bg-green-400"></div>
-						<div class="ml-4 h-4 w-32 rounded bg-gray-100"></div>
-					</div>
+	const panel = document.getElementById("rota-panel");
+	const grid = document.getElementById("rota-grid");
+	const barsHost = document.getElementById("rota-bars");
+	const spreadEl = document.getElementById("rota-spread");
+	const labelEl = document.getElementById("rota-label");
+	const dotsHost = document.getElementById("rota-dots");
 
-					<!-- Mock calendar grid -->
-					<div class="grid grid-cols-7 gap-1.5 mb-4">
-						{
-							Array.from({ length: 7 }).map(() => (
-								<div class="h-3 rounded bg-gray-200 text-[6px] text-center text-gray-400" />
-							))
+	if (panel && grid && barsHost && spreadEl && labelEl && dotsHost) {
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const labels = {
+			initial: panel.dataset.initialLabel ?? "",
+			solution: panel.dataset.solutionLabel ?? "",
+			fairFirst: panel.dataset.fairFirst ?? "",
+			fairEqual: panel.dataset.fairEqual ?? "",
+			hours: panel.dataset.hoursUnit ?? "h",
+		};
+
+		const days = ROTA.days;
+		const staff = ROTA.docs.length;
+		const total = ROTA.solutions.length;
+		const cells: HTMLDivElement[][] = [];
+
+		grid.style.gridTemplateColumns = `repeat(${days}, 22px)`;
+
+		const frag = document.createDocumentFragment();
+		for (let day = 0; day < days; day++) {
+			const head = document.createElement("div");
+			head.className = `rcell hd${ROTA.holidays.includes(day + 1) ? " hol" : ""}`;
+			head.innerHTML = `${day + 1}<i>${ROTA.letters[day]}</i>`;
+			frag.appendChild(head);
+		}
+		for (let person = 0; person < staff; person++) {
+			cells[person] = [];
+			for (let day = 0; day < days; day++) {
+				const cell = document.createElement("div");
+				cell.className = "rcell";
+				frag.appendChild(cell);
+				cells[person][day] = cell;
+			}
+		}
+		grid.appendChild(frag);
+
+		function baseClass(person: number, day: number) {
+			const d = day + 1;
+			if (ROTA.docs[person].GO.includes(d)) return "rcell go";
+			if (ROTA.docs[person].X.includes(d)) return "rcell x";
+			if (ROTA.docs[person].ZD.includes(d)) return "rcell zd";
+			return "rcell";
+		}
+
+		function baseText(person: number, day: number) {
+			const d = day + 1;
+			if (ROTA.docs[person].GO.includes(d)) return "GO";
+			if (ROTA.docs[person].X.includes(d)) return "/";
+			if (ROTA.docs[person].ZD.includes(d)) return "ZD";
+			return "";
+		}
+
+		for (let person = 0; person < staff; person++) {
+			for (let day = 0; day < days; day++) {
+				cells[person][day].className = baseClass(person, day);
+				cells[person][day].textContent = baseText(person, day);
+			}
+		}
+
+		const fills: HTMLElement[] = [];
+		const values: HTMLElement[] = [];
+		for (let person = 0; person < staff; person++) {
+			const row = document.createElement("div");
+			row.className = "lrow";
+			row.innerHTML = `<span>${nameOf(person)}</span><span class="ltrack"><span class="lfill"></span></span><span class="lval">0</span>`;
+			barsHost.appendChild(row);
+			fills.push(row.querySelector(".lfill") as HTMLElement);
+			values.push(row.querySelector(".lval") as HTMLElement);
+		}
+
+		const dots: HTMLElement[] = [];
+		for (let i = 0; i < total; i++) {
+			const dot = document.createElement("u");
+			dotsHost.appendChild(dot);
+			dots.push(dot);
+		}
+
+		function setDot(active: number) {
+			dots.forEach((dot, i) => {
+				dot.className = i === active ? "on" : "";
+			});
+		}
+
+		function setLoad(hours: number[], spread: number) {
+			hours.forEach((value, i) => {
+				fills[i].style.width = `${Math.round((value / MAX_HOURS) * 100)}%`;
+				values[i].textContent = String(value);
+			});
+			spreadEl!.textContent = `${spread} ${labels.hours}`;
+		}
+
+		function clearLoad() {
+			fills.forEach((fill, i) => {
+				fill.style.width = "0%";
+				values[i].textContent = "0";
+			});
+			spreadEl!.textContent = "—";
+		}
+
+		function clearAssignments() {
+			for (let person = 0; person < staff; person++) {
+				for (let day = 0; day < days; day++) {
+					const cell = cells[person][day];
+					if (cell.classList.contains("s16") || cell.classList.contains("s24")) {
+						cell.className = baseClass(person, day);
+						cell.textContent = baseText(person, day);
+					}
+				}
+			}
+		}
+
+		let timers: number[] = [];
+		function clearTimers() {
+			timers.forEach((id) => window.clearTimeout(id));
+			timers = [];
+		}
+		function later(fn: () => void, ms: number) {
+			timers.push(window.setTimeout(fn, ms));
+		}
+
+		function paintSolution(solution: RotaSolution, animate: boolean, done?: () => void) {
+			const step = animate ? 42 : 0;
+			for (let day = 0; day < days; day++) {
+				const current = day;
+				later(() => {
+					const person = solution.assign[current];
+					if (person == null || person < 0) return;
+					const cell = cells[person][current];
+					cell.className = `rcell ${ROTA.long[current] ? "s24" : "s16"}${animate ? " pop" : ""}`;
+					cell.textContent = ROTA.long[current] ? "24" : "16";
+				}, current * step);
+			}
+			later(() => {
+				setLoad(solution.hours, solution.spread);
+				done?.();
+			}, days * step + 60);
+		}
+
+		function solutionLabel(index: number) {
+			const quality = index === 0 ? labels.fairFirst : labels.fairEqual;
+			return `${labels.solution} ${index + 1} / ${total} — <b>${quality}</b>`;
+		}
+
+		let index = 0;
+		let running = false;
+
+		function cycle() {
+			clearTimers();
+			if (index === 0) {
+				clearAssignments();
+				clearLoad();
+				labelEl!.textContent = labels.initial;
+				setDot(-1);
+				later(() => {
+					labelEl!.innerHTML = solutionLabel(0);
+					setDot(0);
+					paintSolution(ROTA.solutions[0], true, () => {
+						index = 1;
+						later(cycle, 2600);
+					});
+				}, 1100);
+			} else {
+				labelEl!.innerHTML = solutionLabel(index);
+				setDot(index);
+				clearAssignments();
+				paintSolution(ROTA.solutions[index], true, () => {
+					index = (index + 1) % total;
+					later(cycle, 2600);
+				});
+			}
+		}
+
+		if (reduced) {
+			paintSolution(ROTA.solutions[0], false);
+			labelEl.innerHTML = solutionLabel(0);
+			setDot(0);
+		} else {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting && !running) {
+							running = true;
+							cycle();
+						} else if (!entry.isIntersecting && running) {
+							clearTimers();
+							running = false;
+							index = 0;
 						}
-						{
-							Array.from({ length: 35 }).map((_, i) => {
-								const colors = [
-									"bg-gray-50",
-									"bg-luna-100",
-									"bg-luna-200",
-									"bg-green-100",
-									"bg-amber-100",
-								];
-								const color = i === 8 || i === 9 || i === 10
-									? "bg-luna-300"
-									: i === 15 || i === 16
-										? "bg-green-200"
-										: i === 22
-											? "bg-amber-200"
-											: colors[Math.floor(Math.random() * 2)];
-								return <div class:list={["h-6 rounded", color]} />;
-							})
-						}
-					</div>
-
-					<!-- Mock stats row -->
-					<div class="grid grid-cols-3 gap-3">
-						<div class="rounded-lg bg-luna-50 p-3">
-							<div class="h-2 w-8 rounded bg-luna-300 mb-2"></div>
-							<div class="text-lg font-bold text-luna-700">18</div>
-						</div>
-						<div class="rounded-lg bg-green-50 p-3">
-							<div class="h-2 w-10 rounded bg-green-300 mb-2"></div>
-							<div class="text-lg font-bold text-green-700">5</div>
-						</div>
-						<div class="rounded-lg bg-amber-50 p-3">
-							<div class="h-2 w-6 rounded bg-amber-300 mb-2"></div>
-							<div class="text-lg font-bold text-amber-700">2</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</Container>
-</section>
+					});
+				},
+				{ threshold: 0.15 },
+			);
+			observer.observe(grid);
+		}
+	}
+</script>

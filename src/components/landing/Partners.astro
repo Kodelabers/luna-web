@@ -1,0 +1,39 @@
+---
+import { useTranslations, type Locale } from "../../i18n/utils";
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="sec partners" id="suradnja">
+	<div class="wrap">
+		<div class="pstrip">
+			<span class="pstrip-label">{t.partners.label}</span>
+			<div class="pstrip-logos">
+				<a href="https://kodelab.hr" target="_blank" rel="noopener" aria-label="Kodelab">
+					<img
+						src="/images/kodelab-znak-crno.png"
+						alt="Kodelab"
+						width="893"
+						height="893"
+						loading="lazy"
+					/>
+				</a>
+				<span class="pstrip-x" aria-hidden="true">×</span>
+				<a href="https://mateh.hr/" target="_blank" rel="noopener" aria-label="Mateh Software">
+					<img
+						src="/images/mateh-logo.png"
+						alt="Mateh Software"
+						width="253"
+						height="90"
+						loading="lazy"
+					/>
+				</a>
+			</div>
+		</div>
+	</div>
+</section>

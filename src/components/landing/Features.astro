@@ -1,7 +1,5 @@
 ---
-import Container from "../ui/Container.astro";
-import SectionHeading from "../ui/SectionHeading.astro";
-import FeatureCard from "./FeatureCard.astro";
+import FeatureIcons from "../icons/FeatureIcons.astro";
 import { useTranslations, type Locale } from "../../i18n/utils";
 
 interface Props {
@@ -10,30 +8,43 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-
-const features = [
-	{ icon: "calendar" as const, ...t.features.absence },
-	{ icon: "chart" as const, ...t.features.planning },
-	{ icon: "shield" as const, ...t.features.balance },
-	{ icon: "users" as const, ...t.features.admin },
-	{ icon: "export" as const, ...t.features.reports },
-];
 ---
 
-<section id="features" class="py-16 sm:py-24">
-	<Container>
-		<SectionHeading title={t.features.title} subtitle={t.features.subtitle} />
+<section class="sec" id="mogucnosti" style="padding-top:0;">
+	<div class="wrap">
+		<span class="kicker">{t.features.kicker}</span>
+		<h2 class="d2">{t.features.title}</h2>
+		<p class="body-lg" style="margin-top:18px;">{t.features.lead}</p>
 
-		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="caps">
 			{
-				features.map((feature) => (
-					<FeatureCard
-						icon={feature.icon}
-						title={feature.title}
-						description={feature.description}
-					/>
+				t.features.items.map((item) => (
+					<div class="cap">
+						<FeatureIcons name={item.icon} class="cap-i" />
+						<h4>{item.title}</h4>
+						<p>{item.description}</p>
+						{item.icon === "contractors" && (
+							<details class="cap-more">
+								<summary>{t.features.moreLabel}</summary>
+								<div class="cap-more-in">
+									<p>{t.features.slotsNote}</p>
+									<div class="cap-slots" aria-hidden="true">
+										{t.features.slots.map((slot) => (
+											<div class="cs-row">
+												<span class="cs-nm">{slot.day}</span>
+												<span class="cs-bar">
+													<i style={`left:${slot.start}%;width:${slot.width}%`} />
+												</span>
+												<span class="cs-t">{slot.label}</span>
+											</div>
+										))}
+									</div>
+								</div>
+							</details>
+						)}
+					</div>
 				))
 			}
 		</div>
-	</Container>
+	</div>
 </section>

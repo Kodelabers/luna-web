@@ -1,24 +1,37 @@
 import { translations } from "./translations";
+import { locales, defaultLocale, isLocale, type Locale } from "./locales";
 
-export type Locale = "hr" | "en" | "sl";
-
-export const locales: Locale[] = ["hr", "en", "sl"];
-export const defaultLocale: Locale = "hr";
+export { locales, defaultLocale, isLocale, type Locale };
 
 export const localeLabels: Record<Locale, string> = {
 	hr: "HR",
 	en: "EN",
 	sl: "SL",
+	de: "DE",
 };
 
 export function getLocaleFromUrl(url: URL): Locale {
 	const [, lang] = url.pathname.split("/");
-	if (locales.includes(lang as Locale)) return lang as Locale;
+	if (lang && isLocale(lang)) return lang;
 	return defaultLocale;
 }
 
 export function useTranslations(locale: Locale) {
 	return translations[locale];
+}
+
+/**
+ * Strips the leading `/<locale>` prefix (if any) from a pathname, so it can be
+ * re-combined with a *different* locale via `getLocalizedUrl`. Always returns
+ * a path starting with `/`.
+ */
+export function stripLocaleFromPath(pathname: string): string {
+	const [, maybeLocale, ...rest] = pathname.split("/");
+	if (maybeLocale && isLocale(maybeLocale)) {
+		const remainder = rest.join("/");
+		return `/${remainder}`;
+	}
+	return pathname.startsWith("/") ? pathname : `/${pathname}`;
 }
 
 export function getLocalizedUrl(locale: Locale, path: string = "/"): string {

@@ -1,0 +1,101 @@
+---
+import { useTranslations, type Locale } from "../../i18n/utils";
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const cards = [
+	{ key: "unfair", title: t.problem.unfairTitle, win: false },
+	{ key: "fair", title: t.problem.fairTitle, win: true },
+];
+---
+
+<section class="sec" id="problem" data-hours-unit={t.hero.rota.hoursUnit}>
+	<div class="wrap">
+		<span class="kicker">{t.problem.kicker}</span>
+		<h2 class="d2">{t.problem.titleLine1}<br />{t.problem.titleLine2}</h2>
+		<p class="body-lg" style="margin-top:22px;">{t.problem.lead}</p>
+
+		<div class="eq-wrap">
+			{
+				cards.map((card) => (
+					<div class:list={["eq-card", card.win && "win"]} data-eq={card.key}>
+						<div class="eq-top">
+							<h3>{card.title}</h3>
+							<span class="tick">{t.problem.legalTick}</span>
+						</div>
+						<p class="eq-note">{t.problem.barsNote}</p>
+						<div class="eq-bars" />
+						<div class="eq-foot">
+							<span>{t.problem.spreadLabel}</span><b class="eq-spread">—</b>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script>
+	import { ROTA, nameOf, MAX_HOURS } from "../../data/rota";
+
+	const section = document.getElementById("problem");
+
+	if (section) {
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const unit = section.dataset.hoursUnit ?? "h";
+
+		function buildCard(key: string, hours: number[], spread: number) {
+			const card = section!.querySelector(`[data-eq="${key}"]`);
+			if (!card) return;
+			const host = card.querySelector(".eq-bars");
+			const mean = hours.reduce((a, b) => a + b, 0) / hours.length;
+
+			hours.forEach((value, i) => {
+				const row = document.createElement("div");
+				row.className = "eqrow";
+				row.innerHTML =
+					`<span class="nm">${nameOf(i)}</span>` +
+					`<span class="eqtrack"><span class="eqfill"></span><span class="mean-line"></span></span>` +
+					`<span class="vl">${value} ${unit}</span>`;
+				const fill = row.querySelector(".eqfill") as HTMLElement;
+				fill.dataset.pct = String(Math.round((value / MAX_HOURS) * 100));
+				(row.querySelector(".mean-line") as HTMLElement).style.left =
+					`${(mean / MAX_HOURS) * 100}%`;
+				host?.appendChild(row);
+			});
+
+			const spreadEl = card.querySelector(".eq-spread");
+			if (spreadEl) spreadEl.textContent = `${spread} ${unit}`;
+		}
+
+		buildCard("unfair", ROTA.unfair.hours, ROTA.unfair.spread);
+		buildCard("fair", ROTA.solutions[0].hours, ROTA.solutions[0].spread);
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (!entry.isIntersecting) return;
+					entry.target.querySelectorAll<HTMLElement>(".eqfill").forEach((fill, i) => {
+						const pct = `${fill.dataset.pct}%`;
+						if (reduced) {
+							fill.style.width = pct;
+							return;
+						}
+						window.setTimeout(() => {
+							fill.style.width = pct;
+						}, i * 70);
+					});
+					observer.unobserve(entry.target);
+				});
+			},
+			{ threshold: 0.25 },
+		);
+
+		section.querySelectorAll(".eq-card").forEach((card) => observer.observe(card));
+	}
+</script>
