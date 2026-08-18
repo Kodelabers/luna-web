@@ -1,5 +1,6 @@
 ---
 import { useTranslations, type Locale } from "../../i18n/utils";
+import { TURNSTILE_SITE_KEY } from "../../consts";
 
 interface Props {
 	locale: Locale;
@@ -9,6 +10,8 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const c = t.contact;
 ---
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <section class="sec" id="kontakt" style="padding-top:0;">
 	<div class="wrap">
@@ -26,6 +29,7 @@ const c = t.contact;
 					data-msg-email-required={c.errors.emailRequired}
 					data-msg-email-invalid={c.errors.emailInvalid}
 					data-msg-submit-failed={c.errors.submitFailed}
+					data-msg-captcha-failed={c.errors.captchaFailed}
 					data-label-submit={c.submit}
 					data-label-submit-pending={c.submitPending}
 					data-toast-success-title={c.toastSuccessTitle}
@@ -132,6 +136,8 @@ const c = t.contact;
 							placeholder={c.problemPlaceholder}></textarea>
 					</div>
 
+					<div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="auto" style="margin-bottom:13px;"></div>
+
 					<button type="submit" class="btn btn-sig" style="width:100%;margin-top:6px;">
 						{c.submit}
 					</button>
@@ -146,6 +152,23 @@ const c = t.contact;
 	import { showToast } from "../../lib/toast";
 
 	const form = document.getElementById("demo-form") as HTMLFormElement | null;
+
+	declare global {
+		interface Window {
+			turnstile?: { reset: (widget?: string | HTMLElement) => void };
+		}
+	}
+
+	function getTurnstileToken(): string {
+		return (
+			form?.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value ?? ""
+		);
+	}
+
+	function resetTurnstile() {
+		const widget = form?.querySelector<HTMLElement>(".cf-turnstile");
+		window.turnstile?.reset(widget ?? undefined);
+	}
 
 	if (form) {
 		/* ---------- custom select ---------- */
@@ -313,6 +336,7 @@ const c = t.contact;
 		const successEl = document.getElementById("demo-form-success");
 		const originalSuccessText = successEl?.textContent ?? "";
 		const submitFailedMsg = form.dataset.msgSubmitFailed ?? "";
+		const captchaFailedMsg = form.dataset.msgCaptchaFailed ?? "";
 		const submitLabel = form.dataset.labelSubmit ?? "";
 		const submitPendingLabel = form.dataset.labelSubmitPending ?? "";
 		const toastSuccessTitle = form.dataset.toastSuccessTitle ?? "";
@@ -337,6 +361,12 @@ const c = t.contact;
 				return;
 			}
 
+			const turnstileToken = getTurnstileToken();
+			if (!turnstileToken) {
+				showToast({ title: toastValidationTitle, description: captchaFailedMsg, variant: "error" });
+				return;
+			}
+
 			form.scrollIntoView({ behavior: "smooth", block: "start" });
 
 			if (successEl) successEl.hidden = true;
@@ -349,7 +379,7 @@ const c = t.contact;
 				const response = await fetch("/api/contact", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(result.data),
+					body: JSON.stringify({ ...result.data, turnstileToken }),
 				});
 
 				if (!response.ok) {
@@ -369,6 +399,9 @@ const c = t.contact;
 				console.error("Contact form submission error", err);
 				showToast({ title: toastErrorTitle, description: submitFailedMsg, variant: "error" });
 			} finally {
+				// Turnstile tokens are single-use and short-lived — always get a
+				// fresh one ready for the next submit attempt, success or not.
+				resetTurnstile();
 				if (submitButton) {
 					submitButton.disabled = false;
 					submitButton.textContent = submitLabel;

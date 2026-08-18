@@ -6,3 +6,13 @@
 # dev` testing, and set the real value in production with:
 #   wrangler secret put RESEND_API_KEY
 RESEND_API_KEY=
+
+# Cloudflare Turnstile secret key used by src/pages/api/contact.ts to verify
+# the captcha token before sending any email. Create a widget at
+# https://dash.cloudflare.com/?to=/:account/turnstile to get this value (the
+# matching public "Site Key" goes in src/consts.ts, not here).
+#
+# Copy this file to .dev.vars (gitignored) for local `astro dev` / `wrangler
+# dev` testing, and set the real value in production with:
+#   wrangler secret put TURNSTILE_SECRET_KEY
+TURNSTILE_SECRET_KEY=

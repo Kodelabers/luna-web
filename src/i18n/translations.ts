@@ -135,6 +135,7 @@ export interface TranslationKeys {
 			emailRequired: string;
 			emailInvalid: string;
 			submitFailed: string;
+			captchaFailed: string;
 		};
 	};
 	footer: {
@@ -369,6 +370,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 				emailRequired: "Obavezno unesite email adresu.",
 				emailInvalid: "Unesite ispravnu email adresu.",
 				submitFailed: "Nešto je pošlo po zlu. Pokušajte ponovno ili nas kontaktirajte izravno.",
+				captchaFailed: "Molimo potvrdite da niste robot.",
 			},
 		},
 		footer: {
@@ -685,6 +687,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 				emailRequired: "Please enter your email address.",
 				emailInvalid: "Please enter a valid email address.",
 				submitFailed: "Something went wrong. Please try again or contact us directly.",
+				captchaFailed: "Please confirm you're not a robot.",
 			},
 		},
 		footer: {
@@ -1001,6 +1004,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 				emailRequired: "Obvezno vnesite e-poštni naslov.",
 				emailInvalid: "Vnesite veljaven e-poštni naslov.",
 				submitFailed: "Nekaj je šlo narobe. Poskusite znova ali nas kontaktirajte neposredno.",
+				captchaFailed: "Prosimo, potrdite, da niste robot.",
 			},
 		},
 		footer: {
@@ -1317,6 +1321,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 				emailRequired: "Bitte geben Sie Ihre E-Mail-Adresse an.",
 				emailInvalid: "Bitte geben Sie eine gültige E-Mail-Adresse an.",
 				submitFailed: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt.",
+				captchaFailed: "Bitte bestätigen Sie, dass Sie kein Roboter sind.",
 			},
 		},
 		footer: {
