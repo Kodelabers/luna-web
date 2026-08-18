@@ -1,5 +1,11 @@
 ---
-import { locales, localeLabels, getLocalizedUrl, type Locale } from "../../i18n/utils";
+import {
+	locales,
+	localeLabels,
+	getLocalizedUrl,
+	stripLocaleFromPath,
+	type Locale,
+} from "../../i18n/utils";
 
 interface Props {
 	currentLocale: Locale;
@@ -7,13 +13,16 @@ interface Props {
 }
 
 const { currentLocale, class: className } = Astro.props;
+// Preserve the current page (minus its locale prefix) so switching language
+// keeps the visitor on the same page instead of bouncing to the homepage. (H2)
+const currentPath = stripLocaleFromPath(Astro.url.pathname);
 ---
 
 <div class:list={["lang", className]}>
 	{
 		locales.map((locale) => (
 			<a
-				href={getLocalizedUrl(locale)}
+				href={getLocalizedUrl(locale, currentPath)}
 				aria-current={locale === currentLocale ? "page" : undefined}
 				lang={locale}
 			>

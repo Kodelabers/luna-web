@@ -7,6 +7,19 @@ interface Props {
 }
 
 const { name, class: className } = Astro.props;
+
+// `Record<FeatureIconName, ...>` instead of a chain of `{name === "..." && (...)}`
+// booleans: TypeScript requires every member of the union to have an entry, so
+// adding a 7th feature icon without one here is a compile error instead of a
+// silently blank icon. (M6)
+const ICON_PATHS: Record<FeatureIconName, string> = {
+	leave: `<rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4m-7 9 2 2 4-4" />`,
+	planning: `<rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M7 13h5M7 17h9" />`,
+	balance: `<path d="M4 20V9M10 20V4M16 20v-7M22 20H2" />`,
+	admin: `<path d="M12 3 4 7v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V7Z" /><path d="m9 12 2 2 4-4" />`,
+	reports: `<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z" /><path d="M14 3v6h6M9 14h6M9 18h4" />`,
+	contractors: `<circle cx="9" cy="8" r="3" /><path d="M3 20v-1.5A4.5 4.5 0 0 1 7.5 14h3A4.5 4.5 0 0 1 15 18.5V20" /><path d="M17 8h5m-2.5-2.5v5" />`,
+};
 ---
 
 <svg
@@ -19,47 +32,5 @@ const { name, class: className } = Astro.props;
 	stroke-linejoin="round"
 	class={className}
 	aria-hidden="true"
->
-	{
-		name === "leave" && (
-			<>
-				<rect x="3" y="5" width="18" height="16" rx="2" />
-				<path d="M3 10h18M8 3v4M16 3v4m-7 9 2 2 4-4" />
-			</>
-		)
-	}
-	{
-		name === "planning" && (
-			<>
-				<rect x="3" y="4" width="18" height="17" rx="2" />
-				<path d="M3 9h18M7 13h5M7 17h9" />
-			</>
-		)
-	}
-	{name === "balance" && <path d="M4 20V9M10 20V4M16 20v-7M22 20H2" />}
-	{
-		name === "admin" && (
-			<>
-				<path d="M12 3 4 7v6c0 4.4 3.4 8.3 8 9 4.6-.7 8-4.6 8-9V7Z" />
-				<path d="m9 12 2 2 4-4" />
-			</>
-		)
-	}
-	{
-		name === "reports" && (
-			<>
-				<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z" />
-				<path d="M14 3v6h6M9 14h6M9 18h4" />
-			</>
-		)
-	}
-	{
-		name === "contractors" && (
-			<>
-				<circle cx="9" cy="8" r="3" />
-				<path d="M3 20v-1.5A4.5 4.5 0 0 1 7.5 14h3A4.5 4.5 0 0 1 15 18.5V20" />
-				<path d="M17 8h5m-2.5-2.5v5" />
-			</>
-		)
-	}
-</svg>
+	set:html={ICON_PATHS[name]}
+/>

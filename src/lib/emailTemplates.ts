@@ -1,3 +1,5 @@
+import type { TranslationKeys } from "../i18n/translations";
+
 const LOGO_URL = "https://app.luna.med/logo.svg";
 
 /** Escapes user-supplied text before it's interpolated into HTML email bodies. */
@@ -34,25 +36,29 @@ export interface DemoRequestDetails {
 	problem?: string;
 }
 
+/** The subset of translation strings the e-mails are built from — sent in the submitter's own locale. (H4) */
+export type EmailStrings = TranslationKeys["email"];
+
 /** Confirmation e-mail sent to the person who submitted the demo request form. */
-export function demoRequestConfirmationHtml(name: string): string {
+export function demoRequestConfirmationHtml(name: string, strings: EmailStrings): string {
 	const safeName = escapeHtml(name);
+	const title = strings.confirmationTitle.replace("{name}", safeName);
 	return emailShell(`
-    <h1 style="margin: 0 0 8px; font-size: 22px; color: #111827;">Hvala na upitu, ${safeName}!</h1>
-    <p style="margin: 0 0 32px; font-size: 15px; color: #6b7280;">Primili smo vaš zahtjev za demo Lune. Naš tim će pregledati raspored koji ste poslali i javiti vam se u roku od 24 sata kako bismo dogovorili termin.</p>
-    <p style="margin: 0; font-size: 13px; color: #9ca3af; text-align: center;">Ako imate dodatna pitanja u međuvremenu, samo odgovorite na ovaj e-mail.</p>
+    <h1 style="margin: 0 0 8px; font-size: 22px; color: #111827;">${title}</h1>
+    <p style="margin: 0 0 32px; font-size: 15px; color: #6b7280;">${escapeHtml(strings.confirmationBody)}</p>
+    <p style="margin: 0; font-size: 13px; color: #9ca3af; text-align: center;">${escapeHtml(strings.confirmationFooterNote)}</p>
   `);
 }
 
 /** Internal notification sent to the Luna team when a demo request form is submitted. */
-export function demoRequestNotificationHtml(details: DemoRequestDetails): string {
+export function demoRequestNotificationHtml(details: DemoRequestDetails, strings: EmailStrings): string {
 	const rows: Array<[string, string | undefined]> = [
-		["Ime i prezime", details.name],
-		["Email", details.email],
-		["Ustanova", details.org],
-		["Broj djelatnika", details.headcount],
-		["Što raspoređuju", details.scope],
-		["Najveći problem", details.problem],
+		[strings.fieldName, details.name],
+		[strings.fieldEmail, details.email],
+		[strings.fieldOrg, details.org],
+		[strings.fieldHeadcount, details.headcount],
+		[strings.fieldScope, details.scope],
+		[strings.fieldProblem, details.problem],
 	];
 
 	const rowsHtml = rows
@@ -67,8 +73,8 @@ export function demoRequestNotificationHtml(details: DemoRequestDetails): string
 		.join("");
 
 	return emailShell(`
-    <h1 style="margin: 0 0 8px; font-size: 22px; color: #111827;">Novi zahtjev za demo</h1>
-    <p style="margin: 0 0 24px; font-size: 15px; color: #6b7280;">Netko je upravo ispunio formu za demo na luna.med.</p>
+    <h1 style="margin: 0 0 8px; font-size: 22px; color: #111827;">${escapeHtml(strings.notificationTitle)}</h1>
+    <p style="margin: 0 0 24px; font-size: 15px; color: #6b7280;">${escapeHtml(strings.notificationLead)}</p>
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
       ${rowsHtml}
     </table>

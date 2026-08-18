@@ -1,4 +1,5 @@
 import type { Locale } from "./utils";
+import type { FeatureIconName } from "../components/icons/types";
 
 export interface LegalSection {
 	heading: string;
@@ -18,6 +19,10 @@ export interface TranslationKeys {
 	meta: {
 		title: string;
 		description: string;
+	};
+	/** Small strings shared across components (shared JS libs like toast.ts aren't Astro components and can't call useTranslations, so callers pass these through). */
+	common: {
+		close: string;
 	};
 	nav: {
 		problem: string;
@@ -96,6 +101,8 @@ export interface TranslationKeys {
 		items: {
 			title: string;
 			description: string;
+			/** Binds this item to its icon by data, not array position — a 7th item added without one is now a compile error instead of a silently blank icon. (M6) */
+			icon: FeatureIconName;
 		}[];
 		moreLabel: string;
 		slotsNote: string;
@@ -138,6 +145,25 @@ export interface TranslationKeys {
 			captchaFailed: string;
 		};
 	};
+	/** Server-side strings for the demo-request e-mails (src/pages/api/contact.ts, src/lib/emailTemplates.ts) — kept alongside `contact` so every locale sends mail in its own language. (H4) */
+	email: {
+		subject: string;
+		/** `{org}` is replaced with the submitted institution name. */
+		subjectWithOrg: string;
+		confirmationSubject: string;
+		/** `{name}` is replaced with the submitter's name. */
+		confirmationTitle: string;
+		confirmationBody: string;
+		confirmationFooterNote: string;
+		notificationTitle: string;
+		notificationLead: string;
+		fieldName: string;
+		fieldEmail: string;
+		fieldOrg: string;
+		fieldHeadcount: string;
+		fieldScope: string;
+		fieldProblem: string;
+	};
 	footer: {
 		description: string;
 		product: string;
@@ -163,6 +189,9 @@ export const translations: Record<Locale, TranslationKeys> = {
 			title: "Luna — Pametno upravljanje rasporedom u zdravstvu",
 			description:
 				"Moderni sustav za upravljanje rasporedom, odmorima i bolovanjima medicinskog osoblja s automatiziranim tijekovima odobravanja.",
+		},
+		common: {
+			close: "Zatvori",
 		},
 		nav: {
 			problem: "Problem",
@@ -293,31 +322,37 @@ export const translations: Record<Locale, TranslationKeys> = {
 			items: [
 				{
 					title: "Odmori i bolovanja",
+					icon: "leave",
 					description:
 						"Osoblje kreira zahtjeve za odmor, bolovanje ili edukaciju. Višeslojni tijek odobravanja osigurava transparentnost — od voditelja odjela do ravnatelja.",
 				},
 				{
 					title: "Planiranje i pregled",
+					icon: "planning",
 					description:
 						"Interaktivni Gantt prikaz dostupnosti tima, 12-mjesečni kalendar s označenim tipovima odsutnosti i osobna nadzorna ploča za svakog zaposlenika.",
 				},
 				{
 					title: "Praćenje salda dana",
+					icon: "balance",
 					description:
 						"Automatsko praćenje raspoloživih dana po tipu odsutnosti, prikaz potrošnje, prijenos neiskorištenih dana i korekcije salda.",
 				},
 				{
 					title: "Administracija",
+					icon: "admin",
 					description:
 						"Upravljanje odjelima, zaposlenicima, praznicima i tipovima odsutnosti. Potpuni revizijski trag svih promjena statusa zahtjeva.",
 				},
 				{
 					title: "Izvještaji i izvoz",
+					icon: "reports",
 					description:
 						"Generiranje PDF i Excel izvještaja o korištenju odmora, planiranju i saldima. Izvoz podataka za potrebe računovodstva i revizije.",
 				},
 				{
 					title: "Vanjski suradnici",
+					icon: "contractors",
 					description:
 						"Poseban status za honorarne suradnike koji rade u više ustanova. Pozivnica na jedan klik, vlastita dostupnost i pregled odrađenih sati za obračun. Dostupnost se upisuje i po dijelu dana, ne samo po cijelom danu.",
 				},
@@ -372,6 +407,23 @@ export const translations: Record<Locale, TranslationKeys> = {
 				submitFailed: "Nešto je pošlo po zlu. Pokušajte ponovno ili nas kontaktirajte izravno.",
 				captchaFailed: "Molimo potvrdite da niste robot.",
 			},
+		},
+		email: {
+			subject: "Luna demo",
+			subjectWithOrg: "Luna demo — {org}",
+			confirmationSubject: "Primili smo vaš zahtjev za demo Lune",
+			confirmationTitle: "Hvala na upitu, {name}!",
+			confirmationBody:
+				"Primili smo vaš zahtjev za demo Lune. Naš tim će pregledati raspored koji ste poslali i javiti vam se u roku od 24 sata kako bismo dogovorili termin.",
+			confirmationFooterNote: "Ako imate dodatna pitanja u međuvremenu, samo odgovorite na ovaj e-mail.",
+			notificationTitle: "Novi zahtjev za demo",
+			notificationLead: "Netko je upravo ispunio formu za demo na luna.med.",
+			fieldName: "Ime i prezime",
+			fieldEmail: "Email",
+			fieldOrg: "Ustanova",
+			fieldHeadcount: "Broj djelatnika",
+			fieldScope: "Što raspoređuju",
+			fieldProblem: "Najveći problem",
 		},
 		footer: {
 			description:
@@ -480,6 +532,9 @@ export const translations: Record<Locale, TranslationKeys> = {
 			title: "Luna — Smart Scheduling for Healthcare",
 			description:
 				"Modern system for managing schedules, leave, and sick days for medical staff with automated approval workflows.",
+		},
+		common: {
+			close: "Close",
 		},
 		nav: {
 			problem: "Problem",
@@ -610,31 +665,37 @@ export const translations: Record<Locale, TranslationKeys> = {
 			items: [
 				{
 					title: "Leave & sick days",
+					icon: "leave",
 					description:
 						"Staff create leave, sick day, or education requests. Multi-level approval workflows ensure transparency — from department heads to facility directors.",
 				},
 				{
 					title: "Planning & overview",
+					icon: "planning",
 					description:
 						"Interactive Gantt view of team availability, a 12-month calendar with color-coded absence types, and a personal dashboard for every employee.",
 				},
 				{
 					title: "Days balance tracking",
+					icon: "balance",
 					description:
 						"Automatic tracking of available days per absence type, usage display, year-end transfers, and balance corrections.",
 				},
 				{
 					title: "Administration",
+					icon: "admin",
 					description:
 						"Manage departments, employees, holidays, and absence types. Complete audit trail of all request status changes.",
 				},
 				{
 					title: "Reports & export",
+					icon: "reports",
 					description:
 						"Generate PDF and Excel reports on leave usage, planning, and balances. Export data for accounting and audit needs.",
 				},
 				{
 					title: "External contractors",
+					icon: "contractors",
 					description:
 						"A dedicated status for freelance contractors working across several institutions. One-click invitation, their own availability, and an overview of hours worked for settlement. Availability can be entered per part of the day, not only per whole day.",
 				},
@@ -689,6 +750,23 @@ export const translations: Record<Locale, TranslationKeys> = {
 				submitFailed: "Something went wrong. Please try again or contact us directly.",
 				captchaFailed: "Please confirm you're not a robot.",
 			},
+		},
+		email: {
+			subject: "Luna demo",
+			subjectWithOrg: "Luna demo — {org}",
+			confirmationSubject: "We've received your Luna demo request",
+			confirmationTitle: "Thanks for reaching out, {name}!",
+			confirmationBody:
+				"We've received your Luna demo request. Our team will review the rota you sent and get back to you within 24 hours to schedule a call.",
+			confirmationFooterNote: "If you have any questions in the meantime, just reply to this e-mail.",
+			notificationTitle: "New demo request",
+			notificationLead: "Someone just submitted the demo form on luna.med.",
+			fieldName: "Full name",
+			fieldEmail: "Email",
+			fieldOrg: "Institution",
+			fieldHeadcount: "Number of staff",
+			fieldScope: "What they schedule",
+			fieldProblem: "Biggest problem",
 		},
 		footer: {
 			description:
@@ -797,6 +875,9 @@ export const translations: Record<Locale, TranslationKeys> = {
 			title: "Luna — Pametno upravljanje razporedov v zdravstvu",
 			description:
 				"Sodoben sistem za upravljanje razporedov, dopustov in bolniških medicinskega osebja z avtomatiziranimi delovnimi tokovi odobritev.",
+		},
+		common: {
+			close: "Zapri",
 		},
 		nav: {
 			problem: "Problem",
@@ -927,31 +1008,37 @@ export const translations: Record<Locale, TranslationKeys> = {
 			items: [
 				{
 					title: "Dopusti in bolniške",
+					icon: "leave",
 					description:
 						"Zaposleni ustvarijo zahtevke za dopust, bolniško ali izobraževanje. Večstopenjski tok odobritev zagotavlja preglednost — od vodij oddelkov do direktorja.",
 				},
 				{
 					title: "Načrtovanje in pregled",
+					icon: "planning",
 					description:
 						"Interaktivni Gantt prikaz razpoložljivosti ekipe, 12-mesečni koledar z označenimi tipi odsotnosti in osebna nadzorna plošča za vsakega zaposlenega.",
 				},
 				{
 					title: "Sledenje stanju dni",
+					icon: "balance",
 					description:
 						"Avtomatsko sledenje razpoložljivih dni po tipu odsotnosti, prikaz porabe, prenos neizrabljenih dni in popravki stanja.",
 				},
 				{
 					title: "Administracija",
+					icon: "admin",
 					description:
 						"Upravljanje oddelkov, zaposlenih, praznikov in tipov odsotnosti. Popolna revizijska sled vseh sprememb statusa zahtevkov.",
 				},
 				{
 					title: "Poročila in izvoz",
+					icon: "reports",
 					description:
 						"Generiranje PDF in Excel poročil o rabi dopusta, načrtovanju in stanjih. Izvoz podatkov za potrebe računovodstva in revizije.",
 				},
 				{
 					title: "Zunanji sodelavci",
+					icon: "contractors",
 					description:
 						"Poseben status za honorarne sodelavce, ki delajo v več ustanovah. Vabilo z enim klikom, lastna razpoložljivost in pregled opravljenih ur za obračun. Razpoložljivost se vpisuje tudi po delu dneva, ne le po celem dnevu.",
 				},
@@ -1006,6 +1093,23 @@ export const translations: Record<Locale, TranslationKeys> = {
 				submitFailed: "Nekaj je šlo narobe. Poskusite znova ali nas kontaktirajte neposredno.",
 				captchaFailed: "Prosimo, potrdite, da niste robot.",
 			},
+		},
+		email: {
+			subject: "Luna predstavitev",
+			subjectWithOrg: "Luna predstavitev — {org}",
+			confirmationSubject: "Prejeli smo vašo zahtevo za Luna predstavitev",
+			confirmationTitle: "Hvala za povpraševanje, {name}!",
+			confirmationBody:
+				"Prejeli smo vašo zahtevo za predstavitev Lune. Naša ekipa bo pregledala poslani razpored in se vam oglasila v 24 urah, da dogovorimo termin.",
+			confirmationFooterNote: "Če imate medtem dodatna vprašanja, samo odgovorite na ta e-mail.",
+			notificationTitle: "Nova zahteva za predstavitev",
+			notificationLead: "Nekdo je pravkar izpolnil obrazec za predstavitev na luna.med.",
+			fieldName: "Ime in priimek",
+			fieldEmail: "E-pošta",
+			fieldOrg: "Ustanova",
+			fieldHeadcount: "Število zaposlenih",
+			fieldScope: "Kaj razporejajo",
+			fieldProblem: "Največji problem",
 		},
 		footer: {
 			description:
@@ -1114,6 +1218,9 @@ export const translations: Record<Locale, TranslationKeys> = {
 			title: "Luna — Intelligente Dienstplanung im Gesundheitswesen",
 			description:
 				"Modernes System für die Verwaltung von Dienstplänen, Urlaub und Krankmeldungen für medizinisches Personal mit automatisierten Genehmigungsabläufen.",
+		},
+		common: {
+			close: "Schließen",
 		},
 		nav: {
 			problem: "Problem",
@@ -1244,31 +1351,37 @@ export const translations: Record<Locale, TranslationKeys> = {
 			items: [
 				{
 					title: "Urlaub und Krankmeldungen",
+					icon: "leave",
 					description:
 						"Mitarbeitende stellen Anträge für Urlaub, Krankmeldung oder Fortbildung. Mehrstufige Genehmigungsabläufe sorgen für Transparenz — von der Abteilungsleitung bis zur Geschäftsführung.",
 				},
 				{
 					title: "Planung und Überblick",
+					icon: "planning",
 					description:
 						"Interaktive Gantt-Ansicht der Teamverfügbarkeit, 12-Monats-Kalender mit farblich markierten Abwesenheitsarten und ein persönliches Dashboard für jede Person.",
 				},
 				{
 					title: "Verfolgung des Tagesguthabens",
+					icon: "balance",
 					description:
 						"Automatische Verfolgung verfügbarer Tage je Abwesenheitsart, Anzeige des Verbrauchs, Übertrag nicht genutzter Tage und Korrekturen des Guthabens.",
 				},
 				{
 					title: "Administration",
+					icon: "admin",
 					description:
 						"Verwaltung von Abteilungen, Mitarbeitenden, Feiertagen und Abwesenheitsarten. Vollständiger Prüfpfad aller Statusänderungen von Anträgen.",
 				},
 				{
 					title: "Berichte und Export",
+					icon: "reports",
 					description:
 						"Erstellung von PDF- und Excel-Berichten zu Urlaubsnutzung, Planung und Guthaben. Datenexport für Buchhaltung und Revision.",
 				},
 				{
 					title: "Externe Mitarbeitende",
+					icon: "contractors",
 					description:
 						"Ein eigener Status für Honorarkräfte, die in mehreren Einrichtungen arbeiten. Einladung mit einem Klick, eigene Verfügbarkeit und Übersicht der geleisteten Stunden für die Abrechnung. Die Verfügbarkeit lässt sich auch nach Tagesabschnitt eintragen, nicht nur für den ganzen Tag.",
 				},
@@ -1323,6 +1436,23 @@ export const translations: Record<Locale, TranslationKeys> = {
 				submitFailed: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt.",
 				captchaFailed: "Bitte bestätigen Sie, dass Sie kein Roboter sind.",
 			},
+		},
+		email: {
+			subject: "Luna Demo",
+			subjectWithOrg: "Luna Demo — {org}",
+			confirmationSubject: "Wir haben Ihre Anfrage für eine Luna-Demo erhalten",
+			confirmationTitle: "Danke für Ihre Anfrage, {name}!",
+			confirmationBody:
+				"Wir haben Ihre Anfrage für eine Luna-Demo erhalten. Unser Team prüft den gesendeten Dienstplan und meldet sich innerhalb von 24 Stunden, um einen Termin zu vereinbaren.",
+			confirmationFooterNote: "Falls Sie in der Zwischenzeit Fragen haben, antworten Sie einfach auf diese E-Mail.",
+			notificationTitle: "Neue Demo-Anfrage",
+			notificationLead: "Jemand hat gerade das Demo-Formular auf luna.med ausgefüllt.",
+			fieldName: "Vor- und Nachname",
+			fieldEmail: "E-Mail",
+			fieldOrg: "Einrichtung",
+			fieldHeadcount: "Anzahl der Mitarbeitenden",
+			fieldScope: "Was geplant wird",
+			fieldProblem: "Größtes Problem",
 		},
 		footer: {
 			description:

@@ -6,6 +6,8 @@ export interface ToastOptions {
 	variant?: ToastVariant;
 	/** Milliseconds before the toast auto-dismisses. */
 	duration?: number;
+	/** Localized label for the close button's `aria-label` (defaults to English "Close" — pass the caller's translated string). (L7) */
+	closeLabel?: string;
 }
 
 const VIEWPORT_ID = "toast-viewport";
@@ -35,6 +37,7 @@ export function showToast({
 	description,
 	variant = "success",
 	duration = DEFAULT_DURATION,
+	closeLabel = "Close",
 }: ToastOptions): void {
 	const viewport = getViewport();
 
@@ -70,7 +73,7 @@ export function showToast({
 	const closeBtn = document.createElement("button");
 	closeBtn.type = "button";
 	closeBtn.className = "toast-close";
-	closeBtn.setAttribute("aria-label", "Close");
+	closeBtn.setAttribute("aria-label", closeLabel);
 	closeBtn.innerHTML =
 		'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 

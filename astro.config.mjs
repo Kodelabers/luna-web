@@ -1,9 +1,9 @@
 // @ts-check
 import { defineConfig } from "astro/config";
-import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
+import { locales, defaultLocale } from "./src/i18n/locales.ts";
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,10 +12,10 @@ export default defineConfig({
 	// on-demand on Cloudflare Workers. Every other page opts back into static
 	// prerendering via `export const prerender = true`.
 	output: "server",
-	integrations: [mdx(), sitemap()],
+	integrations: [sitemap()],
 	i18n: {
-		defaultLocale: "hr",
-		locales: ["hr", "en", "sl", "de"],
+		defaultLocale,
+		locales: [...locales],
 		routing: {
 			prefixDefaultLocale: false,
 		},

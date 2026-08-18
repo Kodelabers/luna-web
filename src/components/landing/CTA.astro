@@ -9,6 +9,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const c = t.contact;
+const closeLabel = t.common.close;
 ---
 
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -25,6 +26,8 @@ const c = t.contact;
 				<form
 					id="demo-form"
 					novalidate
+					data-locale={locale}
+					data-label-close={closeLabel}
 					data-msg-name-required={c.errors.nameRequired}
 					data-msg-email-required={c.errors.emailRequired}
 					data-msg-email-invalid={c.errors.emailInvalid}
@@ -136,7 +139,13 @@ const c = t.contact;
 							placeholder={c.problemPlaceholder}></textarea>
 					</div>
 
-					<div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="auto" style="margin-bottom:13px;"></div>
+					<div
+						class="cf-turnstile"
+						data-sitekey={TURNSTILE_SITE_KEY}
+						data-action="contact_form"
+						data-theme="auto"
+						style="margin-bottom:13px;"
+					></div>
 
 					<button type="submit" class="btn btn-sig" style="width:100%;margin-top:6px;">
 						{c.submit}
@@ -170,6 +179,10 @@ const c = t.contact;
 		window.turnstile?.reset(widget ?? undefined);
 	}
 
+	if (!form) {
+		console.warn("demo-form: #demo-form not found in the DOM — contact form script did nothing.");
+	}
+
 	if (form) {
 		/* ---------- custom select ---------- */
 		form.querySelectorAll<HTMLElement>(".sel").forEach((select) => {
@@ -177,7 +190,18 @@ const c = t.contact;
 			const list = select.querySelector<HTMLUListElement>(".sel-list");
 			const valueEl = select.querySelector<HTMLElement>(".sel-value");
 			const input = select.querySelector<HTMLInputElement>('input[type="hidden"]');
-			if (!button || !list || !valueEl || !input) return;
+			if (!button || !list || !valueEl || !input) {
+				// Silently doing nothing here would leave a scope dropdown that
+				// looks interactive but never responds to clicks — log it so a
+				// missing markup piece shows up in the console instead. (L11)
+				console.warn("demo-form: .sel is missing an expected child element", {
+					button,
+					list,
+					valueEl,
+					input,
+				});
+				return;
+			}
 
 			const options = Array.from(list.querySelectorAll<HTMLLIElement>(".sel-opt"));
 
@@ -294,9 +318,12 @@ const c = t.contact;
 
 		function readValues() {
 			const data = new FormData(form!);
-			return Object.fromEntries(
-				[...data.entries()].map(([key, value]) => [key, String(value)]),
-			);
+			return {
+				...Object.fromEntries([...data.entries()].map(([key, value]) => [key, String(value)])),
+				// Not a form field — the server needs it to send the confirmation
+				// and notification e-mails in the visitor's own language. (H4)
+				locale: form!.dataset.locale ?? "",
+			};
 		}
 
 		function validate() {
@@ -342,6 +369,7 @@ const c = t.contact;
 		const toastSuccessTitle = form.dataset.toastSuccessTitle ?? "";
 		const toastErrorTitle = form.dataset.toastErrorTitle ?? "";
 		const toastValidationTitle = form.dataset.toastValidationTitle ?? "";
+		const closeLabel = form.dataset.labelClose ?? "Close";
 
 		form.addEventListener("submit", async (event) => {
 			event.preventDefault();
@@ -357,13 +385,27 @@ const c = t.contact;
 				showToast({
 					title: toastValidationTitle,
 					variant: "error",
+					closeLabel,
 				});
 				return;
 			}
 
 			const turnstileToken = getTurnstileToken();
 			if (!turnstileToken) {
-				showToast({ title: toastValidationTitle, description: captchaFailedMsg, variant: "error" });
+				// Most commonly caused by an ad/privacy blocker preventing
+				// challenges.cloudflare.com from loading — the widget never
+				// renders, so there's no visible captcha for the visitor to
+				// interact with either. Logged so this is diagnosable from a
+				// bug report instead of looking like a random validation error. (L11)
+				console.warn(
+					"demo-form: no Turnstile token available at submit time (widget blocked or not yet loaded?)",
+				);
+				showToast({
+					title: toastValidationTitle,
+					description: captchaFailedMsg,
+					variant: "error",
+					closeLabel,
+				});
 				return;
 			}
 
@@ -383,7 +425,23 @@ const c = t.contact;
 				});
 
 				if (!response.ok) {
-					throw new Error("Failed to submit form");
+					// Read the server's actual error instead of collapsing every
+					// failure into one generic toast — a captcha timeout and a
+					// full backend outage look identical to the visitor
+					// otherwise, and support can't tell them apart either. (M4)
+					let serverError = "";
+					try {
+						const body = (await response.json()) as { error?: string };
+						serverError = body.error ?? "";
+					} catch {
+						// Non-JSON error body — fall through to the generic message.
+					}
+					console.error("Contact form submission failed", response.status, serverError);
+
+					const description =
+						serverError === "Captcha verification failed" ? captchaFailedMsg : submitFailedMsg;
+					showToast({ title: toastErrorTitle, description, variant: "error", closeLabel });
+					return;
 				}
 
 				(["name", "email", "org", "headcount", "problem"] as const).forEach((field) => {
@@ -394,10 +452,15 @@ const c = t.contact;
 				validateOnChange = false;
 
 				if (successEl) successEl.hidden = false;
-				showToast({ title: toastSuccessTitle, description: originalSuccessText, variant: "success" });
+				showToast({
+					title: toastSuccessTitle,
+					description: originalSuccessText,
+					variant: "success",
+					closeLabel,
+				});
 			} catch (err) {
 				console.error("Contact form submission error", err);
-				showToast({ title: toastErrorTitle, description: submitFailedMsg, variant: "error" });
+				showToast({ title: toastErrorTitle, description: submitFailedMsg, variant: "error", closeLabel });
 			} finally {
 				// Turnstile tokens are single-use and short-lived — always get a
 				// fresh one ready for the next submit attempt, success or not.

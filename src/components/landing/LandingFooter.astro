@@ -62,7 +62,16 @@ const resolve = (href: string) => {
 		</div>
 
 		<div class="f-bot">
-			<span>&copy; {year} {t.footer.copyright}</span>
+			<span>&copy; <span id="footer-year">{year}</span> {t.footer.copyright}</span>
 		</div>
 	</div>
 </footer>
+
+<script>
+	// This page is prerendered at build time, so `year` above is frozen to
+	// whenever the site was last built — it'll read last year on Jan 1st until
+	// the next deploy. Correct it client-side as a cheap progressive
+	// enhancement rather than making the whole footer server-rendered. (L6)
+	const yearEl = document.getElementById("footer-year");
+	if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+</script>

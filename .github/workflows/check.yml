@@ -1,0 +1,25 @@
+name: Check
+
+# Runs on every push/PR so a broken build, a type error, a failing test, or a
+# Worker bundle that no longer validates gets caught before merge instead of
+# after deploy. (M10 — this PR previously shipped +4714 lines with zero CI.)
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # astro build && tsc && wrangler deploy --dry-run && vitest run
+      - run: npm run check

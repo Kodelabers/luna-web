@@ -1,6 +1,5 @@
 ---
 import FeatureIcons from "../icons/FeatureIcons.astro";
-import type { FeatureIconName } from "../icons/types";
 import { useTranslations, type Locale } from "../../i18n/utils";
 
 interface Props {
@@ -9,15 +8,6 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-
-const icons: FeatureIconName[] = [
-	"leave",
-	"planning",
-	"balance",
-	"admin",
-	"reports",
-	"contractors",
-];
 ---
 
 <section class="sec" id="mogucnosti" style="padding-top:0;">
@@ -28,12 +18,12 @@ const icons: FeatureIconName[] = [
 
 		<div class="caps">
 			{
-				t.features.items.map((item, i) => (
+				t.features.items.map((item) => (
 					<div class="cap">
-						<FeatureIcons name={icons[i]} class="cap-i" />
+						<FeatureIcons name={item.icon} class="cap-i" />
 						<h4>{item.title}</h4>
 						<p>{item.description}</p>
-						{icons[i] === "contractors" && (
+						{item.icon === "contractors" && (
 							<details class="cap-more">
 								<summary>{t.features.moreLabel}</summary>
 								<div class="cap-more-in">

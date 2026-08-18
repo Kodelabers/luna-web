@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { CONTACT_EMAIL } from "../../consts";
+import { createContactSchema } from "../../lib/contactSchema";
+import { translations } from "../../i18n/translations";
 import {
 	demoRequestConfirmationHtml,
 	demoRequestNotificationHtml,
@@ -8,35 +10,98 @@ import {
 
 export const prerender = false;
 
-// Server-side validation. Deliberately stricter than kodelab-web's Lambda
-// (which only did truthy checks) — this actually enforces shape/length limits.
-const payloadSchema = z.object({
-	name: z.string().trim().min(1).max(200),
-	email: z.string().trim().email().max(200),
-	org: z.string().trim().max(200).optional(),
-	headcount: z.string().trim().max(50).optional(),
-	scope: z.string().trim().max(200).optional(),
-	problem: z.string().trim().max(4000).optional(),
+// Server-side validation shares its shape with the client (contactSchema.ts)
+// and only adds the fields the client never sends. (M2) Error messages don't
+// matter here — server errors are surfaced as generic strings, not per-field. (M2)
+const payloadSchema = createContactSchema({
+	nameRequired: "",
+	emailRequired: "",
+	emailInvalid: "",
+}).extend({
 	turnstileToken: z.string().trim().min(1),
 });
 
-async function verifyTurnstile(token: string, secretKey: string, remoteIp: string | null) {
+const turnstileOutcomeSchema = z.object({
+	success: z.boolean(),
+	hostname: z.string().optional(),
+	action: z.string().optional(),
+	"error-codes": z.array(z.string()).optional(),
+});
+
+type TurnstileResult =
+	| { ok: true }
+	| { ok: false; reason: "captcha" }
+	| { ok: false; reason: "network" };
+
+const CONTACT_FORM_ACTION = "contact_form";
+
+/**
+ * Verifies a Turnstile token and, unlike the original implementation,
+ * distinguishes three different failure modes instead of collapsing them all
+ * into "false": (M3)
+ *  - the response shape doesn't match what siteverify is documented to return
+ *  - the token is genuinely invalid/expired (a real captcha failure)
+ *  - the request to Cloudflare itself failed (an outage, not a bot)
+ * It also checks `hostname`/`action` so a token minted for another site using
+ * the same site key can't be replayed here.
+ */
+async function verifyTurnstile(
+	token: string,
+	secretKey: string,
+	remoteIp: string | null,
+	expectedHostname: string,
+): Promise<TurnstileResult> {
 	const body = new FormData();
 	body.append("secret", secretKey);
 	body.append("response", token);
 	if (remoteIp) body.append("remoteip", remoteIp);
 
+	let res: Response;
 	try {
-		const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+		res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
 			method: "POST",
 			body,
 		});
-		const outcome = (await res.json()) as { success: boolean };
-		return outcome.success === true;
 	} catch (err) {
-		console.error("Turnstile verification request failed", err);
-		return false;
+		console.error("Turnstile verification request failed (network error)", err);
+		return { ok: false, reason: "network" };
 	}
+
+	let json: unknown;
+	try {
+		json = await res.json();
+	} catch (err) {
+		console.error("Turnstile verification returned a non-JSON response", res.status, err);
+		return { ok: false, reason: "network" };
+	}
+
+	const parsed = turnstileOutcomeSchema.safeParse(json);
+	if (!parsed.success) {
+		console.error("Turnstile verification response had an unexpected shape", parsed.error, json);
+		return { ok: false, reason: "network" };
+	}
+
+	const outcome = parsed.data;
+	if (!outcome.success) {
+		return { ok: false, reason: "captcha" };
+	}
+
+	if (outcome.hostname && outcome.hostname !== expectedHostname) {
+		console.error(
+			"Turnstile hostname mismatch — token minted for",
+			outcome.hostname,
+			"but used on",
+			expectedHostname,
+		);
+		return { ok: false, reason: "captcha" };
+	}
+
+	if (outcome.action && outcome.action !== CONTACT_FORM_ACTION) {
+		console.error("Turnstile action mismatch", outcome.action);
+		return { ok: false, reason: "captcha" };
+	}
+
+	return { ok: true };
 }
 
 function jsonResponse(status: number, body: Record<string, string>) {
@@ -47,6 +112,21 @@ function jsonResponse(status: number, body: Record<string, string>) {
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
+	// Public, unauthenticated endpoint that sends real mail — throttle it per
+	// IP so it can't be scripted into a spam relay. Fails open (with a logged
+	// warning) if the binding is ever missing, rather than taking the whole
+	// form down over an infra misconfiguration. (H1)
+	const remoteIp = request.headers.get("CF-Connecting-IP");
+	const rateLimiter = locals.runtime?.env?.CONTACT_RATE_LIMITER;
+	if (rateLimiter) {
+		const { success } = await rateLimiter.limit({ key: remoteIp ?? "unknown" });
+		if (!success) {
+			return jsonResponse(429, { error: "Too many requests, please try again later" });
+		}
+	} else {
+		console.warn("CONTACT_RATE_LIMITER binding is not configured — skipping rate limit");
+	}
+
 	let payload: unknown;
 	try {
 		payload = await request.json();
@@ -59,7 +139,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		return jsonResponse(400, { error: "Missing or invalid fields" });
 	}
 
-	const { name, email, org, headcount, scope, problem, turnstileToken } = result.data;
+	const { name, email, org, headcount, scope, problem, turnstileToken, locale } = result.data;
+	const t = translations[locale].email;
 
 	const apiKey = locals.runtime?.env?.RESEND_API_KEY;
 	if (!apiKey) {
@@ -73,20 +154,30 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		return jsonResponse(500, { error: "Internal server error" });
 	}
 
-	const remoteIp = request.headers.get("CF-Connecting-IP");
-	const captchaOk = await verifyTurnstile(turnstileToken, turnstileSecret, remoteIp);
-	if (!captchaOk) {
+	const expectedHostname = new URL(request.url).hostname;
+	const captchaOutcome = await verifyTurnstile(
+		turnstileToken,
+		turnstileSecret,
+		remoteIp,
+		expectedHostname,
+	);
+	if (!captchaOutcome.ok) {
+		if (captchaOutcome.reason === "network") {
+			return jsonResponse(502, { error: "Captcha verification unavailable, please try again" });
+		}
 		return jsonResponse(400, { error: "Captcha verification failed" });
 	}
 
-	const subject = org ? `Luna demo — ${org}` : "Luna demo";
+	// `org` is guaranteed free of CR/LF by contactSchema's regex, so it's safe
+	// to interpolate directly into an e-mail subject. (M5)
+	const subject = org ? t.subjectWithOrg.replace("{org}", org) : t.subject;
 	const lines = [
-		`Ime i prezime: ${name}`,
-		`Email: ${email}`,
-		org && `Ustanova: ${org}`,
-		headcount && `Broj djelatnika: ${headcount}`,
-		scope && `Što raspoređuju: ${scope}`,
-		problem && `Najveći problem: ${problem}`,
+		`${t.fieldName}: ${name}`,
+		`${t.fieldEmail}: ${email}`,
+		org && `${t.fieldOrg}: ${org}`,
+		headcount && `${t.fieldHeadcount}: ${headcount}`,
+		scope && `${t.fieldScope}: ${scope}`,
+		problem && `${t.fieldProblem}: ${problem}`,
 	].filter((line): line is string => Boolean(line));
 
 	try {
@@ -102,14 +193,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 				reply_to: email,
 				subject,
 				text: lines.join("\n"),
-				html: demoRequestNotificationHtml({
-					name,
-					email,
-					org,
-					headcount,
-					scope,
-					problem,
-				}),
+				html: demoRequestNotificationHtml(
+					{ name, email, org, headcount, scope, problem },
+					t,
+				),
 			}),
 		});
 
@@ -130,8 +217,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
 			body: JSON.stringify({
 				from: "Luna <noreply@notifications.luna.med>",
 				to: [email],
-				subject: "Primili smo vaš zahtjev za demo Lune",
-				html: demoRequestConfirmationHtml(name),
+				subject: t.confirmationSubject,
+				html: demoRequestConfirmationHtml(name, t),
 			}),
 		});
 
