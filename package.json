@@ -19,7 +19,8 @@
 		"@tailwindcss/vite": "^4.2.2",
 		"astro": "5.16.9",
 		"tailwindcss": "^4.2.2",
-		"typescript": "5.9.3"
+		"typescript": "5.9.3",
+		"zod": "^3.25.76"
 	},
 	"devDependencies": {
 		"wrangler": "4.56.0"

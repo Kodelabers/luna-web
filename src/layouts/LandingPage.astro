@@ -13,11 +13,11 @@ const { title, description, locale } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={locale} class="scroll-smooth">
+<html lang={locale}>
 	<head>
 		<BaseHead title={title} description={description} locale={locale} />
 	</head>
-	<body class="min-h-screen bg-white text-gray-900 antialiased">
+	<body>
 		<Navbar locale={locale} />
 		<main>
 			<slot />

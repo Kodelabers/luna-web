@@ -1,0 +1,48 @@
+---
+import { useTranslations, type Locale } from "../../i18n/utils";
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="sec roles" id="uloge">
+	<div class="wrap">
+		<span class="kicker">{t.roles.kicker}</span>
+		<h2 class="d2">{t.roles.title}</h2>
+		<p class="body-lg" style="margin:20px 0;">{t.roles.lead}</p>
+
+		{
+			t.roles.items.map((role) => (
+				<div class="role">
+					<div class="role-tag">{role.tag}</div>
+					<div>
+						<h3>{role.title}</h3>
+						<p class="role-pain" set:html={role.pain} />
+					</div>
+					<ul class="role-fix">
+						{role.fixes.map((fix) => (
+							<li>
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2.4"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path d="M20 6 9 17l-5-5" />
+								</svg>
+								{fix}
+							</li>
+						))}
+					</ul>
+				</div>
+			))
+		}
+	</div>
+</section>

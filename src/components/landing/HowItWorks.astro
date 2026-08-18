@@ -1,6 +1,4 @@
 ---
-import Container from "../ui/Container.astro";
-import SectionHeading from "../ui/SectionHeading.astro";
 import { useTranslations, type Locale } from "../../i18n/utils";
 
 interface Props {
@@ -11,30 +9,186 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 ---
 
-<section id="how-it-works" class="py-16 sm:py-24 bg-gray-50/50">
-	<Container>
-		<SectionHeading title={t.howItWorks.title} subtitle={t.howItWorks.subtitle} />
+<section class="sec" id="kako">
+	<div class="wrap">
+		<span class="kicker">{t.how.kicker}</span>
+		<h2 class="d2">{t.how.title}</h2>
+		<p class="body-lg" style="margin-top:20px;">{t.how.lead}</p>
 
-		<div class="relative">
-			<!-- Connecting line (desktop) -->
-			<div
-				class="hidden md:block absolute top-12 left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] h-0.5 bg-luna-200"
-			>
+		<div class="space3d">
+			<div class="space-head">
+				<span>{t.how.spaceTitle}<span class="hide-sm">{t.how.spaceTitleSuffix}</span></span>
+				<span id="space-count" data-unit={t.how.solutionsUnit} data-locale={locale}>0</span>
 			</div>
-
-			<div class="grid gap-8 md:grid-cols-3">
-				{
-					t.howItWorks.steps.map((step, index) => (
-						<div class="relative text-center">
-							<div class="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-luna-500 to-luna-600 text-white text-lg font-bold shadow-lg shadow-luna-500/25">
-								{index + 1}
-							</div>
-							<h3 class="text-lg font-semibold text-gray-900">{step.title}</h3>
-							<p class="mt-2 text-gray-600 leading-relaxed">{step.description}</p>
-						</div>
-					))
-				}
+			<canvas id="space" width="1100" height="400" role="img" aria-label={t.how.spaceAria}
+			></canvas>
+			<div class="axes">
+				<span><i style="background:#5B6478"></i>{t.how.axisValid}</span>
+				<span><i style="background:#F0B429"></i>{t.how.axisFair}</span>
+				<span class="hide-sm" style="margin-left:auto;">{t.how.axisNote}</span>
 			</div>
 		</div>
-	</Container>
+
+		<div class="method-steps">
+			{
+				t.how.steps.map((step, i) => (
+					<div class="method-step">
+						<span class="method-n">{String(i + 1).padStart(2, "0")}</span>
+						<div>
+							<h4>{step.title}</h4>
+							<p>{step.description}</p>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
 </section>
+
+<script>
+	interface SpacePoint {
+		x: number;
+		y: number;
+		d: number;
+		r: number;
+		phase: number;
+	}
+
+	const canvas = document.getElementById("space") as HTMLCanvasElement | null;
+	const counter = document.getElementById("space-count");
+	const ctx = canvas?.getContext("2d");
+
+	if (canvas && ctx) {
+		const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const unit = counter?.dataset.unit ?? "";
+		const numberLocale = counter?.dataset.locale ?? "hr";
+		const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+		let width = 0;
+		let height = 0;
+		let points: SpacePoint[] = [];
+		let best = { x: 0, y: 0 };
+
+		function build() {
+			points = [];
+			const count = width < 480 ? 420 : 1100;
+			const cx = width * 0.5;
+			const cy = height * 0.52;
+			const rx = width * 0.4;
+			const ry = height * 0.36;
+			best = { x: cx - rx * 0.3, y: cy + ry * 0.16 };
+
+			for (let i = 0; i < count; i++) {
+				const angle = Math.random() * Math.PI * 2;
+				const radius = Math.pow(Math.random(), 0.62);
+				const x = cx + Math.cos(angle) * radius * rx + (Math.random() - 0.5) * 10;
+				const y = cy + Math.sin(angle) * radius * ry + (Math.random() - 0.5) * 10;
+				const d = Math.hypot(x - best.x, y - best.y) / Math.hypot(rx, ry);
+				points.push({ x, y, d, r: 0.9 + Math.random() * 1.3, phase: Math.random() * Math.PI * 2 });
+			}
+			points.sort((a, b) => a.d - b.d);
+		}
+
+		function resize() {
+			const rect = canvas!.getBoundingClientRect();
+			width = rect.width;
+			height = rect.height;
+			canvas!.width = width * dpr;
+			canvas!.height = height * dpr;
+			ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+			build();
+		}
+
+		function drawAxes() {
+			ctx!.strokeStyle = "rgba(255,255,255,0.05)";
+			ctx!.lineWidth = 1;
+			ctx!.beginPath();
+			ctx!.moveTo(0, height * 0.52);
+			ctx!.lineTo(width, height * 0.52);
+			ctx!.moveTo(width * 0.5, 0);
+			ctx!.lineTo(width * 0.5, height);
+			ctx!.stroke();
+		}
+
+		function drawMarker(opacity: number, ring: number) {
+			ctx!.beginPath();
+			ctx!.fillStyle = `rgba(240,180,41,${opacity})`;
+			ctx!.arc(best.x, best.y, 4 + opacity * 2, 0, Math.PI * 2);
+			ctx!.fill();
+			ctx!.beginPath();
+			ctx!.strokeStyle = `rgba(240,180,41,${opacity * 0.55})`;
+			ctx!.lineWidth = 1.2;
+			ctx!.arc(best.x, best.y, ring, 0, Math.PI * 2);
+			ctx!.stroke();
+			ctx!.font = '500 11px "JetBrains Mono", monospace';
+			ctx!.fillStyle = `rgba(240,180,41,${opacity})`;
+			ctx!.textAlign = "left";
+			ctx!.fillText("LUNA", best.x + ring + 13, best.y + 4);
+		}
+
+		function setCounter(value: number) {
+			if (counter) counter.textContent = `${value.toLocaleString(numberLocale)} ${unit}`;
+		}
+
+		const DURATION = 2600;
+		const CYCLE = 9000;
+		let start: number | null = null;
+
+		function frame(timestamp: number) {
+			if (start === null) start = timestamp;
+			const elapsed = (timestamp - start) % CYCLE;
+			const progress = Math.min(elapsed / DURATION, 1);
+			const eased = 1 - Math.pow(1 - progress, 3);
+
+			ctx!.clearRect(0, 0, width, height);
+			drawAxes();
+
+			const shown = Math.floor(points.length * eased);
+			const settle = Math.max(0, Math.min((elapsed - DURATION) / 900, 1));
+
+			for (let i = 0; i < shown; i++) {
+				const point = points[i];
+				const near = point.d < 0.13;
+				const alpha = near
+					? 0.55 + settle * 0.45
+					: (0.42 - point.d * 0.22) * (1 - settle * 0.55);
+				if (alpha <= 0.01) continue;
+				const twinkle = Math.sin(timestamp / 900 + point.phase) * 0.12;
+				ctx!.beginPath();
+				ctx!.fillStyle = `rgba(${near ? "240,180,41" : "150,160,185"},${Math.max(0, alpha + twinkle).toFixed(3)})`;
+				ctx!.arc(point.x, point.y, point.r, 0, Math.PI * 2);
+				ctx!.fill();
+			}
+
+			if (settle > 0) drawMarker(settle, 12 + Math.sin(timestamp / 620) * 3);
+			setCounter(Math.floor(shown * 4137));
+
+			requestAnimationFrame(frame);
+		}
+
+		function drawStatic() {
+			ctx!.clearRect(0, 0, width, height);
+			drawAxes();
+			points.forEach((point) => {
+				const near = point.d < 0.13;
+				ctx!.beginPath();
+				ctx!.fillStyle = near
+					? "rgba(240,180,41,0.85)"
+					: `rgba(150,160,185,${(0.3 - point.d * 0.14).toFixed(3)})`;
+				ctx!.arc(point.x, point.y, point.r, 0, Math.PI * 2);
+				ctx!.fill();
+			});
+			drawMarker(1, 13);
+			setCounter(points.length * 4137);
+		}
+
+		window.addEventListener("resize", () => {
+			resize();
+			if (reduced) drawStatic();
+		});
+
+		resize();
+		if (reduced) drawStatic();
+		else requestAnimationFrame(frame);
+	}
+</script>

@@ -1,5 +1,6 @@
 {
 	"name": "luna-web",
+	"account_id": "adc66b0503ca51d517fd18a5a83b6734",
 	"compatibility_date": "2025-10-08",
 	"compatibility_flags": ["nodejs_compat"],
 	"main": "./dist/_worker.js/index.js",

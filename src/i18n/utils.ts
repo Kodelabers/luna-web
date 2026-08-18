@@ -1,14 +1,15 @@
 import { translations } from "./translations";
 
-export type Locale = "hr" | "en" | "sl";
+export type Locale = "hr" | "en" | "sl" | "de";
 
-export const locales: Locale[] = ["hr", "en", "sl"];
+export const locales: Locale[] = ["hr", "en", "sl", "de"];
 export const defaultLocale: Locale = "hr";
 
 export const localeLabels: Record<Locale, string> = {
 	hr: "HR",
 	en: "EN",
 	sl: "SL",
+	de: "DE",
 };
 
 export function getLocaleFromUrl(url: URL): Locale {

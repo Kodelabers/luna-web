@@ -1,0 +1,39 @@
+---
+import LandingPage from "../../layouts/LandingPage.astro";
+import LandingFooter from "../landing/LandingFooter.astro";
+import { useTranslations, type Locale } from "../../i18n/utils";
+
+interface Props {
+	locale: Locale;
+	doc: "terms" | "privacy";
+}
+
+const { locale, doc } = Astro.props;
+const t = useTranslations(locale);
+const content = t.legal[doc];
+---
+
+<LandingPage title={`${content.title} | Luna`} description={content.lead} locale={locale}>
+	<section class="py-16 sm:py-20">
+		<div class="mx-auto max-w-3xl px-6">
+			<h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">{content.title}</h1>
+			<p class="mt-4 text-base text-gray-600">{content.lead}</p>
+
+			<div class="mt-10 space-y-8 text-gray-700">
+				{
+					content.sections.map((section) => (
+						<section>
+							<h2 class="text-xl font-semibold text-gray-900">{section.heading}</h2>
+							{section.bodyHtml ? (
+								<p class="mt-2" set:html={section.bodyHtml} />
+							) : (
+								<p class="mt-2">{section.body}</p>
+							)}
+						</section>
+					))
+				}
+			</div>
+		</div>
+	</section>
+	<LandingFooter locale={locale} />
+</LandingPage>

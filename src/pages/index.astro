@@ -1,14 +1,17 @@
 ---
 import LandingPage from "../layouts/LandingPage.astro";
 import Hero from "../components/landing/Hero.astro";
-import TrustBar from "../components/landing/TrustBar.astro";
-import Features from "../components/landing/Features.astro";
-import AIScheduling from "../components/landing/AIScheduling.astro";
+import Problem from "../components/landing/Problem.astro";
+import Roles from "../components/landing/Roles.astro";
 import HowItWorks from "../components/landing/HowItWorks.astro";
-import TeamInfo from "../components/landing/TeamInfo.astro";
+import Features from "../components/landing/Features.astro";
+import Partners from "../components/landing/Partners.astro";
+import Security from "../components/landing/Security.astro";
 import CTA from "../components/landing/CTA.astro";
 import LandingFooter from "../components/landing/LandingFooter.astro";
 import { useTranslations } from "../i18n/utils";
+
+export const prerender = true;
 
 const locale = "hr";
 const t = useTranslations(locale);
@@ -16,11 +19,12 @@ const t = useTranslations(locale);
 
 <LandingPage title={t.meta.title} description={t.meta.description} locale={locale}>
 	<Hero locale={locale} />
-	<TrustBar locale={locale} />
-	<Features locale={locale} />
-	<AIScheduling locale={locale} />
+	<Problem locale={locale} />
+	<Roles locale={locale} />
 	<HowItWorks locale={locale} />
-	<TeamInfo locale={locale} />
+	<Features locale={locale} />
+	<Partners locale={locale} />
+	<Security locale={locale} />
 	<CTA locale={locale} />
 	<LandingFooter locale={locale} />
 </LandingPage>

@@ -1,6 +1,4 @@
 ---
-import Container from "../ui/Container.astro";
-import Button from "../ui/Button.astro";
 import { useTranslations, type Locale } from "../../i18n/utils";
 
 interface Props {
@@ -9,36 +7,373 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+const c = t.contact;
 ---
 
-<section id="contact" class="relative py-16 sm:py-24 overflow-hidden">
-	<div class="absolute inset-0 -z-10 bg-gradient-to-br from-luna-600 via-luna-500 to-luna-700">
-		<div
-			class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-luna-400/20 blur-3xl"
-		>
-		</div>
-		<div
-			class="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-luna-800/30 blur-3xl"
-		>
+<section class="sec" id="kontakt" style="padding-top:0;">
+	<div class="wrap">
+		<div class="cta">
+			<div class="cta-grid">
+				<div>
+					<h2 class="d2">{c.title}</h2>
+					<p class="body-lg" style="margin-top:20px;">{c.lead}</p>
+				</div>
+
+				<form
+					id="demo-form"
+					novalidate
+					data-msg-name-required={c.errors.nameRequired}
+					data-msg-email-required={c.errors.emailRequired}
+					data-msg-email-invalid={c.errors.emailInvalid}
+					data-msg-submit-failed={c.errors.submitFailed}
+					data-label-submit={c.submit}
+					data-label-submit-pending={c.submitPending}
+					data-toast-success-title={c.toastSuccessTitle}
+					data-toast-error-title={c.toastErrorTitle}
+					data-toast-validation-title={c.toastValidationTitle}
+				>
+					<p class="form-msg form-msg-success" id="demo-form-success" role="status" hidden>
+						{c.success}
+					</p>
+
+					<div class="fld2">
+						<div class="fld">
+							<label for="demo-name">{c.nameLabel}</label>
+							<input
+								id="demo-name"
+								name="name"
+								type="text"
+								placeholder={c.namePlaceholder}
+								autocomplete="name"
+								aria-describedby="demo-name-error"
+							/>
+							<p class="fld-msg" id="demo-name-error" data-error-for="name" hidden></p>
+						</div>
+						<div class="fld">
+							<label for="demo-email">{c.emailLabel}</label>
+							<input
+								id="demo-email"
+								name="email"
+								type="email"
+								placeholder={c.emailPlaceholder}
+								autocomplete="email"
+								aria-describedby="demo-email-error"
+							/>
+							<p class="fld-msg" id="demo-email-error" data-error-for="email" hidden></p>
+						</div>
+					</div>
+
+					<div class="fld2">
+						<div class="fld">
+							<label for="demo-org">{c.orgLabel}</label>
+							<input id="demo-org" name="org" type="text" placeholder={c.orgPlaceholder} />
+						</div>
+						<div class="fld">
+							<label for="demo-headcount">{c.headcountLabel}</label>
+							<input
+								id="demo-headcount"
+								name="headcount"
+								type="text"
+								inputmode="numeric"
+								placeholder={c.headcountPlaceholder}
+							/>
+						</div>
+					</div>
+
+					<div class="fld">
+						<span class="fld-label" id="demo-scope-label">{c.scopeLabel}</span>
+						<div class="sel" data-open="false">
+							<button
+								type="button"
+								class="sel-btn"
+								aria-haspopup="listbox"
+								aria-expanded="false"
+								aria-labelledby="demo-scope-label demo-scope-value"
+							>
+								<span class="sel-value" id="demo-scope-value">{c.scopeOptions[0]}</span>
+								<svg
+									class="sel-caret"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2.4"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path d="m6 9 6 6 6-6"></path>
+								</svg>
+							</button>
+							<ul class="sel-list" role="listbox" aria-labelledby="demo-scope-label" hidden>
+								{
+									c.scopeOptions.map((option, i) => (
+										<li
+											class="sel-opt"
+											role="option"
+											tabindex="-1"
+											aria-selected={i === 0 ? "true" : "false"}
+											data-value={option}
+										>
+											{option}
+										</li>
+									))
+								}
+							</ul>
+							<input type="hidden" name="scope" value={c.scopeOptions[0]} />
+						</div>
+					</div>
+
+					<div class="fld">
+						<label for="demo-problem">{c.problemLabel}</label>
+						<textarea
+							id="demo-problem"
+							name="problem"
+							rows="3"
+							placeholder={c.problemPlaceholder}></textarea>
+					</div>
+
+					<button type="submit" class="btn btn-sig" style="width:100%;margin-top:6px;">
+						{c.submit}
+					</button>
+				</form>
+			</div>
 		</div>
 	</div>
-
-	<Container class="text-center">
-		<h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-			{t.cta.title}
-		</h2>
-		<p class="mt-4 text-lg text-luna-100 max-w-2xl mx-auto">
-			{t.cta.subtitle}
-		</p>
-		<div class="mt-8">
-			<Button
-				variant="secondary"
-				size="lg"
-				href="mailto:info@luna.med"
-				class="border-white text-white hover:bg-white/10 hover:border-white"
-			>
-				{t.cta.button}
-			</Button>
-		</div>
-	</Container>
 </section>
+
+<script>
+	import { createContactSchema, type ContactField } from "../../lib/contactSchema";
+	import { showToast } from "../../lib/toast";
+
+	const form = document.getElementById("demo-form") as HTMLFormElement | null;
+
+	if (form) {
+		/* ---------- custom select ---------- */
+		form.querySelectorAll<HTMLElement>(".sel").forEach((select) => {
+			const button = select.querySelector<HTMLButtonElement>(".sel-btn");
+			const list = select.querySelector<HTMLUListElement>(".sel-list");
+			const valueEl = select.querySelector<HTMLElement>(".sel-value");
+			const input = select.querySelector<HTMLInputElement>('input[type="hidden"]');
+			if (!button || !list || !valueEl || !input) return;
+
+			const options = Array.from(list.querySelectorAll<HTMLLIElement>(".sel-opt"));
+
+			const openList = (focusIndex?: number) => {
+				list.hidden = false;
+				select.dataset.open = "true";
+				button.setAttribute("aria-expanded", "true");
+				const selected = options.findIndex((o) => o.getAttribute("aria-selected") === "true");
+				options[focusIndex ?? (selected >= 0 ? selected : 0)]?.focus();
+			};
+
+			const closeList = (returnFocus = true) => {
+				list.hidden = true;
+				select.dataset.open = "false";
+				button.setAttribute("aria-expanded", "false");
+				if (returnFocus) button.focus();
+			};
+
+			const choose = (option: HTMLLIElement) => {
+				options.forEach((o) => o.setAttribute("aria-selected", String(o === option)));
+				const value = option.dataset.value ?? option.textContent?.trim() ?? "";
+				valueEl.textContent = value;
+				input.value = value;
+			};
+
+			button.addEventListener("click", () => {
+				if (list.hidden) openList();
+				else closeList();
+			});
+
+			button.addEventListener("keydown", (event) => {
+				if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+					event.preventDefault();
+					openList(event.key === "ArrowUp" ? options.length - 1 : undefined);
+				}
+			});
+
+			options.forEach((option, index) => {
+				option.addEventListener("click", () => {
+					choose(option);
+					closeList();
+				});
+
+				option.addEventListener("keydown", (event) => {
+					switch (event.key) {
+						case "ArrowDown":
+							event.preventDefault();
+							options[(index + 1) % options.length].focus();
+							break;
+						case "ArrowUp":
+							event.preventDefault();
+							options[(index - 1 + options.length) % options.length].focus();
+							break;
+						case "Home":
+							event.preventDefault();
+							options[0].focus();
+							break;
+						case "End":
+							event.preventDefault();
+							options[options.length - 1].focus();
+							break;
+						case "Enter":
+						case " ":
+							event.preventDefault();
+							choose(option);
+							closeList();
+							break;
+						case "Escape":
+							event.preventDefault();
+							closeList();
+							break;
+						case "Tab":
+							closeList(false);
+							break;
+					}
+				});
+			});
+
+			document.addEventListener("click", (event) => {
+				if (!list.hidden && !select.contains(event.target as Node)) closeList(false);
+			});
+		});
+
+		/* ---------- validation ---------- */
+		const schema = createContactSchema({
+			nameRequired: form.dataset.msgNameRequired ?? "",
+			emailRequired: form.dataset.msgEmailRequired ?? "",
+			emailInvalid: form.dataset.msgEmailInvalid ?? "",
+		});
+
+		const errorEl = (field: string) =>
+			form.querySelector<HTMLElement>(`[data-error-for="${field}"]`);
+
+		const controlEl = (field: string) =>
+			form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${field}"]`);
+
+		function showError(field: string, message: string) {
+			const target = errorEl(field);
+			if (target) {
+				target.textContent = message;
+				target.hidden = false;
+			}
+			controlEl(field)?.setAttribute("aria-invalid", "true");
+		}
+
+		function clearError(field: string) {
+			const target = errorEl(field);
+			if (target) {
+				target.textContent = "";
+				target.hidden = true;
+			}
+			controlEl(field)?.removeAttribute("aria-invalid");
+		}
+
+		function readValues() {
+			const data = new FormData(form!);
+			return Object.fromEntries(
+				[...data.entries()].map(([key, value]) => [key, String(value)]),
+			);
+		}
+
+		function validate() {
+			const result = schema.safeParse(readValues());
+			const fields: ContactField[] = ["name", "email"];
+			fields.forEach(clearError);
+
+			const valid = result.success;
+
+			if (!result.success) {
+				const seen = new Set<string>();
+				result.error.issues.forEach((issue) => {
+					const field = String(issue.path[0] ?? "");
+					if (!field || seen.has(field)) return;
+					seen.add(field);
+					showError(field, issue.message);
+				});
+			}
+
+			return { result, valid };
+		}
+
+		let validateOnChange = false;
+
+		(["name", "email"] as const).forEach((field) => {
+			const control = controlEl(field);
+			control?.addEventListener("input", () => {
+				if (validateOnChange) validate();
+			});
+			control?.addEventListener("blur", () => {
+				if (validateOnChange) validate();
+			});
+		});
+
+		/* ---------- submit (POST to /api/contact) ---------- */
+		const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+		const successEl = document.getElementById("demo-form-success");
+		const originalSuccessText = successEl?.textContent ?? "";
+		const submitFailedMsg = form.dataset.msgSubmitFailed ?? "";
+		const submitLabel = form.dataset.labelSubmit ?? "";
+		const submitPendingLabel = form.dataset.labelSubmitPending ?? "";
+		const toastSuccessTitle = form.dataset.toastSuccessTitle ?? "";
+		const toastErrorTitle = form.dataset.toastErrorTitle ?? "";
+		const toastValidationTitle = form.dataset.toastValidationTitle ?? "";
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+
+			validateOnChange = true;
+			const { result } = validate();
+
+			if (!result.success) {
+				const firstField = String(result.error.issues[0]?.path[0] ?? "");
+				const target = controlEl(firstField);
+				target?.scrollIntoView({ behavior: "smooth", block: "center" });
+				target?.focus({ preventScroll: true });
+				showToast({
+					title: toastValidationTitle,
+					variant: "error",
+				});
+				return;
+			}
+
+			form.scrollIntoView({ behavior: "smooth", block: "start" });
+
+			if (successEl) successEl.hidden = true;
+			if (submitButton) {
+				submitButton.disabled = true;
+				submitButton.textContent = submitPendingLabel;
+			}
+
+			try {
+				const response = await fetch("/api/contact", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(result.data),
+				});
+
+				if (!response.ok) {
+					throw new Error("Failed to submit form");
+				}
+
+				(["name", "email", "org", "headcount", "problem"] as const).forEach((field) => {
+					const el = controlEl(field);
+					if (el) el.value = "";
+					clearError(field);
+				});
+				validateOnChange = false;
+
+				if (successEl) successEl.hidden = false;
+				showToast({ title: toastSuccessTitle, description: originalSuccessText, variant: "success" });
+			} catch (err) {
+				console.error("Contact form submission error", err);
+				showToast({ title: toastErrorTitle, description: submitFailedMsg, variant: "error" });
+			} finally {
+				if (submitButton) {
+					submitButton.disabled = false;
+					submitButton.textContent = submitLabel;
+				}
+			}
+		});
+	}
+</script>

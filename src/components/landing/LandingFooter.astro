@@ -1,8 +1,7 @@
 ---
-import Container from "../ui/Container.astro";
-import LunaLogo from "../icons/LunaLogo.astro";
 import LanguageSwitcher from "../ui/LanguageSwitcher.astro";
-import { useTranslations, type Locale } from "../../i18n/utils";
+import { useTranslations, getLocalizedUrl, type Locale } from "../../i18n/utils";
+import { APP_URL } from "../../consts";
 
 interface Props {
 	locale: Locale;
@@ -10,94 +9,60 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+const home = getLocalizedUrl(locale);
 const year = new Date().getFullYear();
+
+const columns = [
+	{ title: t.footer.product, links: t.footer.productLinks },
+	{ title: t.footer.company, links: t.footer.companyLinks },
+	{ title: t.footer.legal, links: t.footer.legalLinks },
+];
+
+const resolve = (href: string) => {
+	if (href.startsWith("#")) return `${home}${href}`;
+	if (href.startsWith("/")) return getLocalizedUrl(locale, href);
+	return href;
+};
 ---
 
-<footer class="bg-gray-900 text-gray-400 pt-16 pb-8">
-	<Container>
-		<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 pb-12 border-b border-gray-800">
-			<!-- About column -->
-			<div>
-				<LunaLogo size={88} showWordmark={true} class="[&_span]:text-white" />
-				<p class="mt-4 text-sm leading-relaxed">
-					{t.footer.description}
-				</p>
+<footer class="site-footer">
+	<div class="wrap">
+		<div class="f-grid">
+			<div class="f-brand">
+				<a href={home} class="brand"><span class="brand-dot"></span>Luna</a>
+				<p>{t.footer.description}</p>
+				<LanguageSwitcher currentLocale={locale} class="f-lang" />
 			</div>
 
-			<!-- Product column -->
-			<div>
-				<h3 class="text-sm font-semibold text-white uppercase tracking-wider">
-					{t.footer.product}
-				</h3>
-				<ul class="mt-4 space-y-2">
-					{
-						t.footer.productLinks.map((link) => (
-							<li>
-								<a
-									href={link.href}
-									class="text-sm hover:text-luna-400 transition-colors"
-								>
-									{link.label}
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</div>
+			{
+				columns.map((column) => (
+					<div class="f-col">
+						<h5>{column.title}</h5>
+						{column.links.map((link) => (
+							<a
+								href={resolve(link.href)}
+								{...("external" in link && link.external
+									? { target: "_blank", rel: "noopener noreferrer" }
+									: {})}
+							>
+								{link.label}
+							</a>
+						))}
+					</div>
+				))
+			}
 
-			<!-- Company column -->
-			<div>
-				<h3 class="text-sm font-semibold text-white uppercase tracking-wider">
-					{t.footer.company}
-				</h3>
-				<ul class="mt-4 space-y-2">
-					{
-						t.footer.companyLinks.map((link) => (
-							<li>
-								<a
-									href={link.href}
-									class="text-sm hover:text-luna-400 transition-colors"
-								>
-									{link.label}
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</div>
-
-			<!-- Legal column -->
-			<div>
-				<h3 class="text-sm font-semibold text-white uppercase tracking-wider">
-					{t.footer.legal}
-				</h3>
-				<ul class="mt-4 space-y-2">
-					{
-						t.footer.legalLinks.map((link) => (
-							<li>
-								<a
-									href={link.href}
-									class="text-sm hover:text-luna-400 transition-colors"
-									{...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-								>
-									{link.label}
-								</a>
-							</li>
-						))
-					}
-				</ul>
+			<div class="f-col f-cta">
+				<h5>{t.footer.ctaHeading}</h5>
+				<a href={`${home}#kontakt`} class="btn btn-ink btn-sm" style="margin-bottom:10px;">
+					{t.footer.ctaButton}
+				</a>
+				<a href={APP_URL} class="f-plain">{t.footer.appLink}</a>
 			</div>
 		</div>
 
-		<!-- Bottom bar -->
-		<div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-			<p class="text-sm">
-				&copy; {year} {t.footer.copyright}
-			</p>
-			<LanguageSwitcher
-				currentLocale={locale}
-				class="bg-gray-800 [&_a]:text-gray-400 [&_a[aria-current]]:bg-gray-700 [&_a[aria-current]]:text-white"
-			/>
+		<div class="f-bot">
+			<span>&copy; {year} {t.footer.copyright}</span>
 		</div>
-	</Container>
+	</div>
 </footer>
