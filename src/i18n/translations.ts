@@ -414,8 +414,8 @@ export const translations: Record<Locale, TranslationKeys> = {
 			confirmationSubject: "Primili smo vaš zahtjev za demo Lune",
 			confirmationTitle: "Hvala na upitu, {name}!",
 			confirmationBody:
-				"Primili smo vaš zahtjev za demo Lune. Naš tim će pregledati raspored koji ste poslali i javiti vam se u roku od 24 sata kako bismo dogovorili termin.",
-			confirmationFooterNote: "Ako imate dodatna pitanja u međuvremenu, samo odgovorite na ovaj e-mail.",
+				"Primili smo vaš zahtjev za demo Lune. Naš tim će pregledati upit koji ste poslali i javiti Vam se u roku od 24 sata kako bismo dogovorili termin.",
+			confirmationFooterNote: "Ako imate dodatna pitanja u međuvremenu, javite nam se na info@luna.med.",
 			notificationTitle: "Novi zahtjev za demo",
 			notificationLead: "Netko je upravo ispunio formu za demo na luna.med.",
 			fieldName: "Ime i prezime",
@@ -556,7 +556,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			rota: {
 				caption: "ON-CALL DUTY · AUGUST 2026 · 9 DOCTORS",
 				gridAria:
-					"Animated view: starting from annual leave and unavailability constraints, the algorithm fills in the monthly on-call rota, then cycles through five different schedules that are all equally fair.",
+					"Animated view: starting from annual leave and unavailability constraints, the algorithm fills in the monthly on-call schedule, then cycles through five different schedules that are all equally fair.",
 				initialLabel: "INITIAL STATE — constraints only",
 				solutionLabel: "SOLUTION",
 				fairFirst: "fair",
@@ -572,44 +572,44 @@ export const translations: Record<Locale, TranslationKeys> = {
 		},
 		problem: {
 			kicker: "Problem",
-			titleLine1: "Both rotas are legal,",
+			titleLine1: "Both shift schedules are legal,",
 			titleLine2: "but they are not equal.",
-			lead: "Software that “just makes a rota” stops at the first solution that breaks no rule. But within the legal boundaries an enormous number of rotas still exists — and the difference between them is not a formality, it is something a person absorbs personally.",
+			lead: "Software that “just makes a shift schedule” stops at the first solution that breaks no rule. But within the legal boundaries an enormous number of shift schedules still exists — and the difference is not a formality — someone ends up living it.",
 			legalTick: "✓ legally compliant",
 			barsNote: "Overtime hours per doctor",
 			spreadLabel: "Highest ↔ lowest difference",
-			unfairTitle: "First rota found",
-			fairTitle: "The rota Luna produces",
+			unfairTitle: "First shift schedule found",
+			fairTitle: "The shift schedule Luna produces",
 		},
 		roles: {
 			kicker: "Who it's for",
 			title: "Three roles, three different problems",
-			lead: "An even distribution is the foundation, but each group needs something specific from a rota.",
+			lead: "An even distribution is the foundation, but each group needs something specific from a shift schedule.",
 			items: [
 				{
 					tag: "01 / Doctors",
 					title: "On-call duty that doesn't always pile up on the same people",
-					pain: "Building a rota that follows the law is not hard. What is hard is keeping on-call shifts, nights, and weekends evenly distributed across <em>an entire month or quarter</em> — while making sure every shift has enough experience alongside the residents. Luna assembles the whole rota, and <em>the final word stays with the manager</em>.",
+					pain: "Building a shift schedule that follows the law is not hard. What is hard is keeping on-call shifts, nights, and weekends evenly distributed across <em>an entire month or quarter</em> — while making sure every shift has enough experience alongside the residents. Luna assembles the whole shift schedule, and <em>the final word stays with the manager</em>.",
 					fixes: [
 						"Workload is levelled across the entire period, not week by week",
 						"Legal limits on work and rest are built into the algorithm itself",
-						"The whole month is solved at once; if the manager locks or later changes something, the rota rebalances itself around it",
+						"The whole month is solved at once; if the manager locks or later changes something, the shift schedule rebalances itself around it",
 					],
 				},
 				{
 					tag: "02 / Nurses",
 					title: "The head nurse no longer collects availability on paper slips",
-					pain: "Most of the time goes into <em>collecting availability and preferences</em> from staff before the rota even starts taking shape. Luna gathers that in one place, so the shift and workstation rota is generated with a single click.",
+					pain: "Most of the time goes into <em>collecting availability and preferences</em> from staff before the shift schedule even starts taking shape. Luna gathers that in one place, so the shift and workstation schedule is generated with a single click.",
 					fixes: [
 						"Staff enter their own availability and preferences — no collecting around the ward",
-						"The shift and workstation rota is generated with a single click",
+						"The shift and workstation schedule is generated with a single click",
 						"Everyone sees their own shifts on their phone as soon as something changes",
 					],
 				},
 				{
 					tag: "03 / Clinics",
 					title: "Contractor availability without thirty messages and calls",
-					pain: "Private clinics work with external contractors who come from other institutions. The biggest time cost is not the rota itself, but <em>collecting their availability</em> and filling open shifts. And availability rarely covers a whole day — one person is free <em>only from 4 pm</em>, another <em>only until 2 pm</em>.",
+					pain: "Private clinics work with external contractors who come from other institutions. The biggest time cost is not the shift schedule itself, but <em>collecting their availability</em> and filling open shifts. And availability rarely covers a whole day — one person is free <em>only from 4 pm</em>, another <em>only until 2 pm</em>.",
 					fixes: [
 						"Contractors enter their own availability — per part of the day, not just “available / unavailable”",
 						"Open shifts are offered automatically to available contractors with the right specialty",
@@ -625,16 +625,16 @@ export const translations: Record<Locale, TranslationKeys> = {
 			spaceTitle: "SOLUTION SPACE",
 			spaceTitleSuffix: " · PROJECTED BY FAIRNESS",
 			spaceAria:
-				"A cloud of points: each point is a legally valid rota. The golden cluster are rotas that are also fair, and Luna picks one of them.",
+				"A cloud of points: each point is a legally valid shift schedule. The golden cluster are shift schedules that are also fair, and Luna picks one of them.",
 			solutionsUnit: "SOLUTIONS",
-			axisValid: "Valid rota",
+			axisValid: "Valid schedule",
 			axisFair: "Valid and fair",
 			axisNote: "horizontal: night-shift spread · vertical: total-hours spread",
 			steps: [
 				{
-					title: "A rota is not a list, it is a space",
+					title: "A shift schedule is not a list, it is a space",
 					description:
-						"For a single month and around twenty people there is an astronomical number of rotas that satisfy every legal rule. A tool that returns “the first one that passes” has not solved the problem — it has only picked at random.",
+						"For a single month and around twenty people there is an astronomical number of shift schedules that satisfy every legal rule. A tool that returns “the first one that passes” has not solved the problem — it has only picked at random.",
 				},
 				{
 					title: "Fairness is a measurable quantity",
@@ -654,7 +654,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 				{
 					title: "There is more than one fair solution — and that is good news",
 					description:
-						"There is rarely only one fair rota. So the manager is not handed an ultimatum but a choice: several equally fair rotas to pick from based on what the algorithm cannot know — who works well in rotation with whom. The chosen rota stays in their hands: shifts can be assigned or changed manually at any time.",
+						"There is rarely only one fair shift schedule. So the manager is not handed an ultimatum but a choice: several equally fair shift schedules to pick from based on what the algorithm cannot know — who works well in rotation with whom. The chosen shift schedule stays in their hands: shifts can be assigned or changed manually at any time.",
 				},
 			],
 		},
@@ -676,10 +676,10 @@ export const translations: Record<Locale, TranslationKeys> = {
 						"Interactive Gantt view of team availability, a 12-month calendar with color-coded absence types, and a personal dashboard for every employee.",
 				},
 				{
-					title: "Days balance tracking",
+					title: "Leave balance tracking",
 					icon: "balance",
 					description:
-						"Automatic tracking of available days per absence type, usage display, year-end transfers, and balance corrections.",
+						"Automatic tracking of available days per absence type, usage display, carry-over of unused days, and balance corrections.",
 				},
 				{
 					title: "Administration",
@@ -704,22 +704,22 @@ export const translations: Record<Locale, TranslationKeys> = {
 			slotsNote:
 				"A contractor does not just pick “available / unavailable” per day — they enter a time window too. One is free only from 4 pm, another only until 2 pm. Luna treats those windows as constraints and builds shifts around them.",
 			slots: [
-				{ day: "mon", label: "until 14", start: 0, width: 58 },
-				{ day: "tue", label: "from 16", start: 67, width: 33 },
-				{ day: "wed", label: "all day", start: 0, width: 100 },
+				{ day: "Mon", label: "until 14", start: 0, width: 58 },
+				{ day: "Tue", label: "from 16", start: 67, width: 33 },
+				{ day: "Wed", label: "all day", start: 0, width: 100 },
 			],
 		},
 		partners: {
-			label: "Luna is built in partnership",
+			label: "Built in partnership",
 		},
 		security: {
 			kicker: "Trust",
 			title: "Staff data",
-			lead: "Rotas, sick leave, and personal employee records are among the more sensitive data an institution holds. That is why access and visibility follow the person's role within the institution, and every request status change is recorded in an audit trail.",
+			lead: "Shift schedules, sick leave, and personal employee records are among the more sensitive data an institution holds. That is why access and visibility follow the person's role within the institution, and every request status change is recorded in an audit trail.",
 		},
 		contact: {
 			title: "Show us your worst month",
-			lead: "Send us the rota that gave you the most trouble. On the demo call we show what Luna does with it — and how much the workload spread shrinks.",
+			lead: "Send us the shift schedule that gave you the most trouble. On the demo call we show what Luna does with it — and how much the workload spread shrinks.",
 			nameLabel: "FULL NAME",
 			namePlaceholder: "Jane Doe",
 			emailLabel: "EMAIL",
@@ -757,8 +757,8 @@ export const translations: Record<Locale, TranslationKeys> = {
 			confirmationSubject: "We've received your Luna demo request",
 			confirmationTitle: "Thanks for reaching out, {name}!",
 			confirmationBody:
-				"We've received your Luna demo request. Our team will review the rota you sent and get back to you within 24 hours to schedule a call.",
-			confirmationFooterNote: "If you have any questions in the meantime, just reply to this e-mail.",
+				"We've received your Luna demo request. Our team will review your details and get back to you within 24 hours to schedule a call.",
+			confirmationFooterNote: "If you have any questions in the meantime, feel free to reach us at info@luna.med.",
 			notificationTitle: "New demo request",
 			notificationLead: "Someone just submitted the demo form on luna.med.",
 			fieldName: "Full name",
@@ -894,7 +894,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			headlineAccent: "brez stresa",
 			subheadline:
 				"Avtomatizirani razporedi, dopusti in bolniške — brez preglednic in papirjev. Luna poenostavi upravljanje razporedov medicinskega osebja.",
-			ctaPrimary: "Zahtevajte predstavitev",
+			ctaPrimary: "Naročite predstavitev",
 			ctaSecondary: "Kako deluje",
 			rota: {
 				caption: "DEŽURSTVA · AVGUST 2026 · 9 ZDRAVNIKOV",
@@ -917,7 +917,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			kicker: "Problem",
 			titleLine1: "Oba razporeda sta zakonita,",
 			titleLine2: "a nista enaka.",
-			lead: "Programska oprema, ki „samo naredi razpored\", se ustavi pri prvi rešitvi, ki ne krši nobenega pravila. A znotraj zakonskih okvirov še vedno obstaja ogromno število razporedov — in razlika med njimi ni formalna, temveč jo nekdo odnese na svoji koži.",
+			lead: "Programska oprema, ki „samo naredi razpored\", se ustavi pri prvi rešitvi, ki ne krši nobenega pravila. A znotraj zakonskih okvirov še vedno obstaja ogromno število razporedov — in razlika med njimi ni formalna, temveč jo nekdo občuti na svoji koži.",
 			legalTick: "✓ zakonsko ustrezen",
 			barsNote: "Nadure na zdravnika",
 			spreadLabel: "Razlika največ ↔ najmanj",
@@ -932,7 +932,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 				{
 					tag: "01 / Zdravniki",
 					title: "Dežurstva, ki se ne kopičijo vedno pri istih",
-					pain: "Narediti razpored, ki spoštuje zakon, ni težko. Težko je skozi <em>cel mesec ali kvartal</em> ohranjati dežurstva, nočne in vikende enakomerno razporejene — in hkrati paziti, da je v vsaki izmeni dovolj izkušenj ob specializantih. Luna sestavi celoten razpored, <em>zadnja beseda pa ostane pri vodji</em>.",
+					pain: "Narediti razpored, ki spoštuje zakon, ni težko. Težko je skozi <em>cel mesec ali četrtletje</em> ohranjati dežurstva, nočne in vikende enakomerno razporejene — in hkrati paziti, da je v vsaki izmeni dovolj izkušenj ob specializantih. Luna sestavi celoten razpored, <em>zadnja beseda pa ostane pri vodji</em>.",
 					fixes: [
 						"Obremenitev se izravnava skozi celotno obdobje, ne teden za tednom",
 						"Zakonske omejitve dela in počitka so vgrajene v sam algoritem",
@@ -954,7 +954,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 					title: "Razpoložljivost sodelavcev brez tridesetih sporočil in klicev",
 					pain: "Zasebne ambulante delajo z zunanjimi sodelavci, ki prihajajo iz drugih ustanov. Največji strošek časa ni sam razpored, temveč <em>zbiranje njihove razpoložljivosti</em> in zapolnjevanje odprtih izmen. Razpoložljivost pa redko velja za cel dan — nekdo lahko <em>šele popoldne od 16</em>, nekdo samo <em>zjutraj do 14</em>.",
 					fixes: [
-						"Sodelavci sami vpišejo, kdaj lahko — in to po delu dneva, ne samo „lahko / ne morem\"",
+						"Sodelavci sami vpišejo, kdaj lahko — in to po delu dneva, ne samo „na voljo / nisem na voljo\"",
 						"Odprte izmene se same ponudijo razpoložljivim z ustrezno specialnostjo",
 						"Opravljene ure se zbirajo same, pripravljene za obračun honorarjev",
 					],
@@ -1045,7 +1045,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			],
 			moreLabel: "več…",
 			slotsNote:
-				"Sodelavec ne izbira samo „lahko / ne morem\" po dnevu — vpiše tudi časovno okno. Nekdo je prost šele popoldne od 16, nekdo samo zjutraj do 14. Luna ta okna upošteva kot omejitev in okoli njih sestavi izmene.",
+				"Sodelavec ne izbira samo „na voljo / nisem na voljo\" po dnevu — vpiše tudi časovno okno. Nekdo je prost šele popoldne od 16, nekdo samo zjutraj do 14. Luna ta okna upošteva kot omejitev in okoli njih sestavi izmene.",
 			slots: [
 				{ day: "pon", label: "do 14", start: 0, width: 58 },
 				{ day: "tor", label: "od 16", start: 67, width: 33 },
@@ -1080,7 +1080,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			],
 			problemLabel: "NAJVEČJI PROBLEM Z RAZPOREDOM (NI OBVEZNO)",
 			problemPlaceholder: "Npr. nočne vedno pristanejo pri istih...",
-			submit: "Zahtevajte predstavitev",
+			submit: "Naročite predstavitev",
 			submitPending: "Pošiljanje...",
 			success: "Hvala! Javili se bomo v 24 urah.",
 			toastSuccessTitle: "Uspešno poslano!",
@@ -1100,8 +1100,8 @@ export const translations: Record<Locale, TranslationKeys> = {
 			confirmationSubject: "Prejeli smo vašo zahtevo za Luna predstavitev",
 			confirmationTitle: "Hvala za povpraševanje, {name}!",
 			confirmationBody:
-				"Prejeli smo vašo zahtevo za predstavitev Lune. Naša ekipa bo pregledala poslani razpored in se vam oglasila v 24 urah, da dogovorimo termin.",
-			confirmationFooterNote: "Če imate medtem dodatna vprašanja, samo odgovorite na ta e-mail.",
+				"Prejeli smo vašo zahtevo za predstavitev Lune. Naša ekipa bo pregledala vaše podatke in se vam oglasila v 24 urah, da dogovorimo termin.",
+			confirmationFooterNote: "Če imate medtem dodatna vprašanja, nam pišite na info@luna.med.",
 			notificationTitle: "Nova zahteva za predstavitev",
 			notificationLead: "Nekdo je pravkar izpolnil obrazec za predstavitev na luna.med.",
 			fieldName: "Ime in priimek",
@@ -1133,7 +1133,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 				{ label: "Politika zasebnosti", href: "/privacy" },
 			],
 			ctaHeading: "Začnimo",
-			ctaButton: "Zahtevajte predstavitev",
+			ctaButton: "Naročite predstavitev",
 			appLink: "Prijava v aplikacijo →",
 			copyright: "Kodelab d.o.o. Vse pravice pridržane.",
 		},
@@ -1260,9 +1260,9 @@ export const translations: Record<Locale, TranslationKeys> = {
 			kicker: "Problem",
 			titleLine1: "Beide Dienstpläne sind rechtmäßig,",
 			titleLine2: "aber sie sind nicht gleich.",
-			lead: "Software, die „einfach einen Dienstplan erstellt“, hält bei der ersten Lösung an, die keine Regel verletzt. Doch innerhalb des rechtlichen Rahmens gibt es weiterhin eine enorme Zahl möglicher Pläne — und der Unterschied zwischen ihnen ist keine Formalität, sondern etwas, das jemand am eigenen Leib trägt.",
+			lead: "Software, die „einfach einen Dienstplan erstellt“, hält bei der ersten Lösung an, die keine Regel verletzt. Doch innerhalb des rechtlichen Rahmens gibt es weiterhin eine enorme Zahl möglicher Pläne — und der Unterschied zwischen ihnen ist keine Formalität, sondern etwas, das jemand am eigenen Leib spürt.",
 			legalTick: "✓ rechtlich korrekt",
-			barsNote: "Überstunden pro Arzt",
+			barsNote: "Überstunden pro Ärztin/Arzt",
 			spreadLabel: "Differenz höchste ↔ niedrigste",
 			unfairTitle: "Erster gefundener Dienstplan",
 			fairTitle: "Der Dienstplan von Luna",
@@ -1362,7 +1362,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 						"Interaktive Gantt-Ansicht der Teamverfügbarkeit, 12-Monats-Kalender mit farblich markierten Abwesenheitsarten und ein persönliches Dashboard für jede Person.",
 				},
 				{
-					title: "Verfolgung des Tagesguthabens",
+					title: "Urlaubskonto im Blick",
 					icon: "balance",
 					description:
 						"Automatische Verfolgung verfügbarer Tage je Abwesenheitsart, Anzeige des Verbrauchs, Übertrag nicht genutzter Tage und Korrekturen des Guthabens.",
@@ -1396,7 +1396,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 			],
 		},
 		partners: {
-			label: "Luna entsteht in Zusammenarbeit",
+			label: "Luna entsteht in Zusammenarbeit von Kodelab und Mateh",
 		},
 		security: {
 			kicker: "Vertrauen",
@@ -1443,8 +1443,8 @@ export const translations: Record<Locale, TranslationKeys> = {
 			confirmationSubject: "Wir haben Ihre Anfrage für eine Luna-Demo erhalten",
 			confirmationTitle: "Danke für Ihre Anfrage, {name}!",
 			confirmationBody:
-				"Wir haben Ihre Anfrage für eine Luna-Demo erhalten. Unser Team prüft den gesendeten Dienstplan und meldet sich innerhalb von 24 Stunden, um einen Termin zu vereinbaren.",
-			confirmationFooterNote: "Falls Sie in der Zwischenzeit Fragen haben, antworten Sie einfach auf diese E-Mail.",
+				"Wir haben Ihre Anfrage für eine Luna-Demo erhalten. Unser Team prüft Ihre Angaben und meldet sich innerhalb von 24 Stunden, um einen Termin zu vereinbaren.",
+			confirmationFooterNote: "Falls Sie in der Zwischenzeit Fragen haben, schreiben Sie uns gerne an info@luna.med.",
 			notificationTitle: "Neue Demo-Anfrage",
 			notificationLead: "Jemand hat gerade das Demo-Formular auf luna.med ausgefüllt.",
 			fieldName: "Vor- und Nachname",
