@@ -110,6 +110,7 @@ export interface TranslationKeys {
 	};
 	partners: {
 		label: string;
+		ceo: string;
 	};
 	security: {
 		kicker: string;
@@ -368,6 +369,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 		},
 		partners: {
 			label: "Luna je razvijena u suradnji",
+			ceo: "dr. sc. Krešimir Dželalija, CEO",
 		},
 		security: {
 			kicker: "Povjerenje",
@@ -711,6 +713,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 		},
 		partners: {
 			label: "Built in partnership",
+			ceo: "Krešimir Dželalija, PhD, CEO",
 		},
 		security: {
 			kicker: "Trust",
@@ -1054,6 +1057,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 		},
 		partners: {
 			label: "Luna je razvita v sodelovanju",
+			ceo: "dr. Krešimir Dželalija, CEO",
 		},
 		security: {
 			kicker: "Zaupanje",
@@ -1397,6 +1401,7 @@ export const translations: Record<Locale, TranslationKeys> = {
 		},
 		partners: {
 			label: "Luna entsteht in Zusammenarbeit von Kodelab und Mateh",
+			ceo: "Dr. Krešimir Dželalija, CEO",
 		},
 		security: {
 			kicker: "Vertrauen",

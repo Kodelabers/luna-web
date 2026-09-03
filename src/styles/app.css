@@ -1102,7 +1102,7 @@ header[id] {
 .pstrip-logos {
 	display: flex;
 	align-items: center;
-	gap: 34px;
+	gap: 30px;
 	flex-wrap: wrap;
 	justify-content: center;
 }
@@ -1113,15 +1113,56 @@ header[id] {
 	align-items: center;
 }
 
-.pstrip-logos img {
-	height: 40px;
+.pstrip-logos a img {
 	width: auto;
 	opacity: 0.9;
 	transition: opacity 0.15s;
 }
 
+/* Sized per lockup rather than to one shared height: the Kodelab mark sits on
+   the same line as its wordmark, while the Mateh badge is as tall as its whole
+   block, so equal image heights would leave the two names badly mismatched. */
+.pstrip-kodelab {
+	height: 34px;
+}
+
+.pstrip-mateh {
+	height: 60px;
+}
+
 .pstrip-logos a:hover img {
 	opacity: 1;
+}
+
+.pstrip-sep {
+	width: 1px;
+	height: 46px;
+	background: var(--line);
+}
+
+.pstrip-person {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	margin: 0;
+}
+
+.pstrip-person img {
+	width: 60px;
+	height: 60px;
+	border-radius: 999px;
+	object-fit: cover;
+	object-position: 50% 15%;
+	border: 1px solid var(--line);
+}
+
+.pstrip-person figcaption {
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 0.95rem;
+	line-height: 1.35;
+	color: var(--ink);
+	text-align: left;
 }
 
 .pstrip-x {
@@ -1139,11 +1180,30 @@ header[id] {
 
 @media (max-width: 560px) {
 	.pstrip-logos {
-		gap: 22px;
+		gap: 20px;
 	}
 
-	.pstrip-logos img {
-		height: 32px;
+	.pstrip-kodelab {
+		height: 28px;
+	}
+
+	.pstrip-mateh {
+		height: 48px;
+	}
+
+	/* Both separators read as stray marks once the row wraps to one item per line. */
+	.pstrip-sep,
+	.pstrip-x {
+		display: none;
+	}
+
+	.pstrip-person img {
+		width: 52px;
+		height: 52px;
+	}
+
+	.pstrip-person figcaption {
+		font-size: 0.875rem;
 	}
 }
 
